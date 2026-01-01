@@ -3,24 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NERV // CENTRAL DOGMA // 第壱話</title>
+    <title>AEGIS // CORE NEXUS // 序章</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&family=Black+Ops+One&family=Russo+One&family=Teko:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Evangelion-accurate fonts: Archivo Black for bold titles, Sawarabi Gothic for JP, Share Tech Mono for terminals -->
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+JP:wght@400;700;900&family=Orbitron:wght@400;700;900&family=Oswald:wght@400;500;600;700&family=Sawarabi+Gothic&family=Share+Tech+Mono&family=Teko:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --nerv-orange: #ff6b00;
-            --nerv-red: #dc2626;
-            --nerv-red-dark: #991b1b;
-            --eva-purple: #7c3aed;
-            --eva-green: #22c55e;
-            --terminal-green: #00ff41;
-            --warning-yellow: #fbbf24;
-            --deep-black: #0a0a0a;
-            --grid-color: rgba(255, 107, 0, 0.1);
-            --lcl-orange: #ff8c42;
-            --seele-red: #8b0000;
+            /* Evangelion Color Palette - Screen Accurate */
+            --nerv-orange: #ff6600;
+            --nerv-orange-bright: #ff8800;
+            --nerv-red: #cc0000;
+            --nerv-red-dark: #990000;
+            --eva-purple: #663399;
+            --eva-green: #00cc00;
+            --terminal-green: #00ff00;
+            --warning-yellow: #ffcc00;
+            --deep-black: #000000;
+            --panel-black: #0a0a0a;
+            --grid-color: rgba(255, 102, 0, 0.1);
+            --lcl-orange: #ff6633;
+            --council-red: #660000;
+            --text-white: #ffffff;
         }
 
         * {
@@ -34,7 +39,7 @@
         }
 
         body {
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
             background: var(--deep-black);
             color: #fff;
             overflow-x: hidden;
@@ -57,11 +62,13 @@
         }
 
         .loading-text {
-            font-family: 'Teko', sans-serif;
-            font-size: 1.5rem;
+            font-family: 'Oswald', 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 500;
             color: var(--nerv-orange);
-            letter-spacing: 0.5em;
+            letter-spacing: 0.8em;
             margin-top: 2rem;
+            text-transform: uppercase;
         }
 
         .loading-bar {
@@ -99,16 +106,45 @@
             z-index: -1;
         }
 
-        /* Japanese Text */
-        .jp-text {
-            font-family: 'Noto Sans JP', sans-serif;
+        /* NERV Sync Display Background Canvas */
+        #nerv-bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            opacity: 0.15;
+            pointer-events: none;
         }
 
-        /* Eva Title Font */
+        /* Japanese Text - Evangelion Style */
+        .jp-text {
+            font-family: 'Sawarabi Gothic', 'Noto Sans JP', sans-serif;
+            font-weight: 700;
+        }
+
+        /* Eva Title Font - Bold Condensed */
         .eva-title {
-            font-family: 'Teko', sans-serif;
+            font-family: 'Archivo Black', 'Oswald', sans-serif;
             font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Eva Warning Text */
+        .eva-warning-text {
+            font-family: 'Oswald', 'Bebas Neue', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+        }
+
+        /* Eva Alert Text - Large Bold */
+        .eva-alert-text {
+            font-family: 'Archivo Black', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
 
         /* Scanline Effect */
@@ -170,35 +206,46 @@
             animation: rgb-split 0.1s infinite;
         }
 
-        /* Warning Stripes */
+        /* Warning Stripes - Evangelion Authentic */
         .warning-stripes {
             background: repeating-linear-gradient(
-                45deg,
-                var(--nerv-orange),
-                var(--nerv-orange) 10px,
+                -45deg,
+                var(--warning-yellow),
+                var(--warning-yellow) 10px,
                 #000 10px,
                 #000 20px
             );
-            height: 8px;
+            height: 10px;
         }
 
         .warning-stripes-red {
             background: repeating-linear-gradient(
-                45deg,
+                -45deg,
                 var(--nerv-red),
-                var(--nerv-red) 10px,
-                #000 10px,
-                #000 20px
+                var(--nerv-red) 8px,
+                #000 8px,
+                #000 16px
             );
-            height: 6px;
+            height: 8px;
         }
 
-        /* NERV Logo */
+        .warning-stripes-orange {
+            background: repeating-linear-gradient(
+                -45deg,
+                var(--nerv-orange),
+                var(--nerv-orange) 8px,
+                #000 8px,
+                #000 16px
+            );
+            height: 8px;
+        }
+
+        /* NERV Logo - Evangelion Accurate */
         .nerv-logo {
-            font-family: 'Teko', sans-serif;
-            font-weight: 700;
-            font-size: 6rem;
-            letter-spacing: 0.3em;
+            font-family: 'Archivo Black', 'Oswald', sans-serif;
+            font-weight: 900;
+            font-size: 5rem;
+            letter-spacing: 0.4em;
             color: var(--nerv-orange);
             text-shadow: 
                 0 0 10px var(--nerv-orange),
@@ -211,10 +258,11 @@
         .episode-card {
             background: #fff;
             color: #000;
-            padding: 0.5rem 2rem;
-            font-family: 'Teko', sans-serif;
+            padding: 0.4rem 1.5rem;
+            font-family: 'Archivo Black', 'Oswald', sans-serif;
             font-weight: 700;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
+            letter-spacing: 0.1em;
             display: inline-block;
             transform: skewX(-5deg);
             box-shadow: 4px 4px 0 var(--nerv-red);
@@ -288,10 +336,11 @@
 
         .terminal-text {
             color: var(--terminal-green);
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
             overflow: hidden;
             white-space: nowrap;
-            border-right: 3px solid var(--terminal-green);
+            border-right: 2px solid var(--terminal-green);
             animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
         }
 
@@ -388,9 +437,10 @@
             color: #888;
             transition: all 0.3s ease;
             clip-path: polygon(15px 0, 100% 0, calc(100% - 15px) 100%, 0 100%);
-            font-family: 'Teko', sans-serif;
-            font-size: 1.1rem;
-            letter-spacing: 0.1em;
+            font-family: 'Oswald', 'Bebas Neue', sans-serif;
+            font-weight: 500;
+            font-size: 1rem;
+            letter-spacing: 0.15em;
         }
 
         .nav-item::before {
@@ -425,14 +475,15 @@
         }
 
         .data-panel::after {
-            content: 'NERV';
+            content: 'AEGIS';
             position: absolute;
             top: 5px;
             right: 10px;
             font-size: 8px;
             color: var(--nerv-orange);
             opacity: 0.5;
-            font-family: 'Teko', sans-serif;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 500;
             letter-spacing: 0.2em;
         }
 
@@ -506,9 +557,10 @@
             color: #fff;
             padding: 2px 20px;
             font-size: 10px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            font-family: 'Teko', sans-serif;
+            font-weight: 600;
+            letter-spacing: 3px;
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
         }
 
         /* Button Style */
@@ -517,8 +569,9 @@
             border: 2px solid var(--nerv-orange);
             color: var(--nerv-orange);
             padding: 1rem 2.5rem;
-            font-family: 'Teko', sans-serif;
-            font-size: 1.2rem;
+            font-family: 'Oswald', 'Bebas Neue', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
             text-transform: uppercase;
             letter-spacing: 0.3em;
             position: relative;
@@ -552,11 +605,11 @@
 
         /* Section Headers */
         .section-header {
-            font-family: 'Teko', sans-serif;
+            font-family: 'Archivo Black', 'Oswald', sans-serif;
             font-weight: 700;
             position: relative;
             display: inline-block;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.15em;
         }
 
         .section-header::after {
@@ -627,20 +680,20 @@
             background: var(--nerv-orange);
         }
 
-        /* SEELE Monolith Style */
-        .seele-monolith {
+        /* COUNCIL Monolith Style */
+        .council-monolith {
             background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
             border: 1px solid #333;
             position: relative;
             transition: all 0.3s ease;
         }
 
-        .seele-monolith:hover {
+        .council-monolith:hover {
             border-color: var(--nerv-red);
             box-shadow: 0 0 20px rgba(139, 0, 0, 0.5);
         }
 
-        .seele-monolith::before {
+        .council-monolith::before {
             content: 'SOUND ONLY';
             position: absolute;
             top: 50%;
@@ -648,9 +701,11 @@
             transform: translate(-50%, -50%);
             color: var(--nerv-red);
             font-size: 10px;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
             opacity: 0.8;
-            font-family: 'Teko', sans-serif;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 500;
+            text-transform: uppercase;
         }
 
         /* Entry Plug Display */
@@ -674,7 +729,7 @@
 
         /* Countdown Timer */
         .countdown {
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Oswald', sans-serif;
             font-size: 3rem;
             color: var(--nerv-red);
             text-shadow: 0 0 20px var(--nerv-red), 0 0 40px var(--nerv-red);
@@ -753,13 +808,339 @@
         /* Big Text Background */
         .bg-text {
             position: absolute;
-            font-family: 'Teko', sans-serif;
-            font-weight: 700;
-            font-size: 20vw;
-            color: rgba(255, 107, 0, 0.03);
+            font-family: 'Archivo Black', 'Oswald', sans-serif;
+            font-weight: 900;
+            font-size: 18vw;
+            color: rgba(255, 102, 0, 0.03);
             white-space: nowrap;
             pointer-events: none;
             user-select: none;
+            letter-spacing: 0.05em;
+        }
+
+        /* ============================================ */
+        /* EVANGELION AUTHENTIC WARNING PANELS         */
+        /* ============================================ */
+        
+        /* Classic Eva Warning Box */
+        .eva-warning-box {
+            background: #000;
+            border: 4px solid var(--warning-yellow);
+            position: relative;
+            padding: 20px 40px;
+        }
+
+        .eva-warning-box::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            border: 2px solid var(--warning-yellow);
+            pointer-events: none;
+        }
+
+        .eva-warning-box .warning-title {
+            font-family: 'Archivo Black', 'Oswald', sans-serif;
+            font-size: 2.5rem;
+            color: var(--warning-yellow);
+            text-align: center;
+            letter-spacing: 0.3em;
+            margin-bottom: 10px;
+        }
+
+        .eva-warning-box .warning-jp {
+            font-family: 'Sawarabi Gothic', 'Noto Sans JP', sans-serif;
+            font-size: 1.5rem;
+            color: var(--warning-yellow);
+            text-align: center;
+            letter-spacing: 0.2em;
+        }
+
+        /* Eva Alert Banner - Top/Bottom Style */
+        .eva-alert-banner {
+            background: var(--nerv-red);
+            color: #fff;
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 0.5em;
+            text-align: center;
+            padding: 8px 0;
+            text-transform: uppercase;
+        }
+
+        /* Eva Data Display */
+        .eva-data-display {
+            font-family: 'Share Tech Mono', monospace;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid var(--nerv-orange);
+            padding: 10px 15px;
+            color: var(--nerv-orange);
+            font-size: 0.8rem;
+        }
+
+        .eva-data-display .label {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            color: #888;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+
+        .eva-data-display .value {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: var(--nerv-orange);
+        }
+
+        /* Eva Progress Indicator */
+        .eva-progress {
+            height: 20px;
+            background: #111;
+            border: 2px solid var(--nerv-orange);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .eva-progress-fill {
+            height: 100%;
+            background: var(--nerv-orange);
+            transition: width 0.3s ease;
+        }
+
+        .eva-progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Oswald', sans-serif;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #fff;
+            text-shadow: 1px 1px 2px #000;
+            letter-spacing: 0.1em;
+        }
+
+        /* Eva Status Indicator */
+        .eva-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .eva-status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: status-pulse 1s ease-in-out infinite;
+        }
+
+        .eva-status-dot.green { background: var(--eva-green); }
+        .eva-status-dot.yellow { background: var(--warning-yellow); }
+        .eva-status-dot.red { background: var(--nerv-red); animation-duration: 0.5s; }
+        .eva-status-dot.orange { background: var(--nerv-orange); }
+
+        @keyframes status-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* ============================================ */
+        /* NERV COMPUTER DISPLAY - MAGI INTERFACE      */
+        /* ============================================ */
+
+        .nerv-computer-display {
+            position: relative;
+            background: #000;
+            padding: 30px;
+            border: 2px solid var(--nerv-orange);
+            overflow: hidden;
+        }
+
+        .nerv-computer-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(90deg, transparent 50%, rgba(0,0,0,0.3) 50%),
+                linear-gradient(0deg, transparent 50%, rgba(0,0,0,0.3) 50%);
+            background-size: 4px 4px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Chevron Bars - Green */
+        .chevron-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .chevron-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        .chevron-bar {
+            height: 18px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .chevron-bar.green {
+            background: linear-gradient(90deg, #00ffaa 0%, #00ff88 50%, #00ffaa 100%);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.6), inset 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        .chevron-bar.red {
+            background: linear-gradient(90deg, #ff0000 0%, #ff3333 50%, #ff0000 100%);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.6), inset 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        /* Chevron Arrow Shape */
+        .chevron-bar::after {
+            content: '';
+            position: absolute;
+            right: -12px;
+            top: 0;
+            width: 0;
+            height: 0;
+            border-top: 9px solid transparent;
+            border-bottom: 9px solid transparent;
+        }
+
+        .chevron-bar.green::after {
+            border-left: 12px solid #00ff88;
+        }
+
+        .chevron-bar.red::after {
+            border-left: 12px solid #ff3333;
+        }
+
+        /* Data Labels */
+        .data-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            color: var(--nerv-orange);
+            white-space: nowrap;
+            text-shadow: 0 0 5px var(--nerv-orange);
+        }
+
+        .data-label.highlight {
+            background: var(--nerv-orange);
+            color: #000;
+            padding: 1px 6px;
+            font-weight: bold;
+        }
+
+        .data-label.red-bg {
+            background: var(--nerv-red);
+            color: #fff;
+            padding: 1px 6px;
+        }
+
+        /* Border Lines */
+        .data-border {
+            border: 1px solid var(--nerv-orange);
+            padding: 2px 8px;
+            display: inline-block;
+        }
+
+        /* Center Divider */
+        .center-divider {
+            width: 2px;
+            background: var(--nerv-orange);
+            position: relative;
+        }
+
+        .center-divider::before,
+        .center-divider::after {
+            content: '';
+            position: absolute;
+            left: -3px;
+            width: 8px;
+            height: 8px;
+            background: var(--nerv-orange);
+        }
+
+        .center-divider::before { top: 0; }
+        .center-divider::after { bottom: 0; }
+
+        /* Sync Box */
+        .sync-box {
+            background: var(--nerv-red);
+            color: #fff;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 600;
+            font-size: 12px;
+            padding: 4px 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Connector Lines */
+        .connector-line {
+            position: absolute;
+            background: var(--nerv-orange);
+            height: 1px;
+        }
+
+        .connector-line.vertical {
+            width: 1px;
+            height: auto;
+        }
+
+        /* Blinking Animation for Sync */
+        @keyframes sync-blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        .sync-blink {
+            animation: sync-blink 1s ease-in-out infinite;
+        }
+
+        /* Data Grid */
+        .magi-data-grid {
+            display: grid;
+            grid-template-columns: 1fr 60px 1fr;
+            gap: 0;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .magi-column {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .magi-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        /* Scan Line Animation */
+        @keyframes scan-line {
+            0% { transform: translateY(-100%); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(50000%); opacity: 0; }
         }
 
         /* Noise Overlay */
@@ -829,9 +1210,478 @@
         .animated-border > * {
             background: var(--deep-black);
         }
+
+        /* ============================================ */
+        /* EVANGELION AUTHENTIC UI ELEMENTS            */
+        /* ============================================ */
+
+        /* Classic EVA Warning Screen */
+        .eva-warning-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .eva-warning-screen.active {
+            display: flex;
+            animation: warning-flash 0.5s ease-in-out infinite;
+        }
+
+        @keyframes warning-flash {
+            0%, 100% { background: rgba(0, 0, 0, 0.95); }
+            50% { background: rgba(30, 0, 0, 0.95); }
+        }
+
+        .eva-warning-screen .warning-text {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 8vw;
+            color: var(--warning-yellow);
+            letter-spacing: 0.5em;
+            text-shadow: 0 0 30px var(--warning-yellow);
+            animation: text-flicker 0.1s infinite;
+        }
+
+        .eva-warning-screen .warning-jp {
+            font-family: 'Sawarabi Gothic', 'Noto Sans JP', sans-serif;
+            font-size: 3vw;
+            color: var(--warning-yellow);
+            letter-spacing: 0.3em;
+            margin-top: 20px;
+        }
+
+        @keyframes text-flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Pattern Blue/Orange Alert */
+        .pattern-alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #000;
+            border: 4px solid;
+            padding: 40px 80px;
+            z-index: 9999;
+            display: none;
+            text-align: center;
+        }
+
+        .pattern-alert.blue {
+            border-color: #0066ff;
+            box-shadow: 0 0 50px rgba(0, 102, 255, 0.5), inset 0 0 30px rgba(0, 102, 255, 0.1);
+        }
+
+        .pattern-alert.orange {
+            border-color: var(--nerv-orange);
+            box-shadow: 0 0 50px rgba(255, 102, 0, 0.5), inset 0 0 30px rgba(255, 102, 0, 0.1);
+        }
+
+        .pattern-alert.active {
+            display: block;
+            animation: pattern-pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pattern-pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.02); }
+        }
+
+        .pattern-alert h2 {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 3rem;
+            letter-spacing: 0.3em;
+            margin-bottom: 10px;
+        }
+
+        .pattern-alert.blue h2 { color: #0066ff; }
+        .pattern-alert.orange h2 { color: var(--nerv-orange); }
+
+        .pattern-alert p {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1rem;
+            color: #888;
+            letter-spacing: 0.2em;
+        }
+
+        /* AT Field Hexagon Display */
+        .at-field-display {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+
+        .at-field-hex {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--nerv-orange);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            animation: hex-rotate 10s linear infinite;
+        }
+
+        .at-field-hex:nth-child(2) {
+            transform: scale(0.7);
+            animation-delay: -2s;
+            border-color: var(--warning-yellow);
+        }
+
+        .at-field-hex:nth-child(3) {
+            transform: scale(0.4);
+            animation-delay: -4s;
+            border-color: var(--nerv-red);
+        }
+
+        @keyframes hex-rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Entry Plug Sync Display */
+        .sync-rate-display {
+            background: #000;
+            border: 2px solid var(--nerv-orange);
+            padding: 20px;
+            position: relative;
+        }
+
+        .sync-rate-display::before {
+            content: 'SYNC RATE';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: #000;
+            padding: 0 10px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 12px;
+            color: var(--nerv-orange);
+            letter-spacing: 2px;
+        }
+
+        .sync-bar-container {
+            display: flex;
+            gap: 4px;
+            height: 30px;
+        }
+
+        .sync-bar-segment {
+            flex: 1;
+            background: #111;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+        }
+
+        .sync-bar-segment.active {
+            background: linear-gradient(180deg, #00ff88 0%, #00cc66 100%);
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        .sync-bar-segment.warning {
+            background: linear-gradient(180deg, var(--warning-yellow) 0%, #cc9900 100%);
+            box-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+        }
+
+        .sync-bar-segment.danger {
+            background: linear-gradient(180deg, var(--nerv-red) 0%, #990000 100%);
+            box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);
+            animation: danger-blink 0.5s infinite;
+        }
+
+        @keyframes danger-blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Evangelion Episode Card */
+        .episode-title-card {
+            background: #fff;
+            color: #000;
+            padding: 15px 50px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .episode-title-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 8px;
+            height: 100%;
+            background: var(--nerv-red);
+        }
+
+        .episode-title-card h3 {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 0.1em;
+        }
+
+        .episode-title-card .jp-title {
+            font-family: 'Sawarabi Gothic', 'Noto Sans JP', sans-serif;
+            font-size: 1rem;
+            margin-top: 5px;
+        }
+
+        /* Scrolling Data Overlay */
+        .data-scroll-overlay {
+            position: fixed;
+            top: 0;
+            height: 100%;
+            width: 30px;
+            overflow: hidden;
+            z-index: 50;
+            pointer-events: none;
+        }
+
+        .data-scroll-overlay.left { left: 10px; }
+        .data-scroll-overlay.right { right: 10px; }
+
+        .data-scroll-content {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 8px;
+            color: var(--nerv-orange);
+            opacity: 0.4;
+            writing-mode: vertical-rl;
+            white-space: nowrap;
+            animation: scroll-data 20s linear infinite;
+        }
+
+        @keyframes scroll-data {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        /* Corner Brackets */
+        .corner-bracket {
+            position: fixed;
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--nerv-orange);
+            z-index: 55;
+            pointer-events: none;
+        }
+
+        .corner-bracket.top-left {
+            top: 20px;
+            left: 20px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-bracket.top-right {
+            top: 20px;
+            right: 20px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .corner-bracket.bottom-left {
+            bottom: 20px;
+            left: 20px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .corner-bracket.bottom-right {
+            bottom: 20px;
+            right: 20px;
+            border-left: none;
+            border-top: none;
+        }
+
+        /* Status Bar Bottom */
+        .nerv-status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, #000 100%);
+            border-top: 2px solid var(--nerv-orange);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 100;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+        }
+
+        .nerv-status-bar .status-group {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nerv-status-bar .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--nerv-orange);
+        }
+
+        .nerv-status-bar .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--eva-green);
+            animation: status-pulse 2s ease-in-out infinite;
+        }
+
+        .nerv-status-bar .status-dot.warning {
+            background: var(--warning-yellow);
+        }
+
+        .nerv-status-bar .status-dot.error {
+            background: var(--nerv-red);
+            animation: danger-blink 0.5s infinite;
+        }
+
+        /* Depth Gauge */
+        .depth-gauge {
+            position: fixed;
+            left: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 300px;
+            background: #111;
+            border: 1px solid var(--nerv-orange);
+            z-index: 50;
+        }
+
+        .depth-gauge-fill {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(180deg, var(--nerv-red) 0%, var(--nerv-orange) 50%, var(--eva-green) 100%);
+            transition: height 0.5s ease;
+        }
+
+        .depth-gauge-markers {
+            position: absolute;
+            top: 0;
+            right: -25px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-size: 8px;
+            color: var(--nerv-orange);
+        }
+
+        /* Japanese Side Text */
+        .jp-side-text {
+            position: fixed;
+            font-family: 'Sawarabi Gothic', 'Noto Sans JP', sans-serif;
+            font-size: 14px;
+            color: rgba(255, 102, 0, 0.2);
+            writing-mode: vertical-rl;
+            letter-spacing: 0.5em;
+            z-index: 40;
+            pointer-events: none;
+        }
+
+        .jp-side-text.left {
+            left: 100px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .jp-side-text.right {
+            right: 100px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
     </style>
 </head>
 <body class="scanlines crt-flicker vignette">
+    <!-- Corner Brackets -->
+    <div class="corner-bracket top-left"></div>
+    <div class="corner-bracket top-right"></div>
+    <div class="corner-bracket bottom-left"></div>
+    <div class="corner-bracket bottom-right"></div>
+
+    <!-- Depth Gauge -->
+    <div class="depth-gauge hidden lg:block">
+        <div class="depth-gauge-fill" id="depth-fill" style="height: 65%;"></div>
+        <div class="depth-gauge-markers">
+            <span>0</span>
+            <span>-500</span>
+            <span>-1000</span>
+            <span>-1500</span>
+            <span>-2000</span>
+        </div>
+    </div>
+
+    <!-- Japanese Side Text -->
+    <div class="jp-side-text left hidden lg:block">全ての生命は、海から生まれ、そしてまた海へ還る</div>
+    <div class="jp-side-text right hidden lg:block">人類補完計画</div>
+
+    <!-- Data Scroll Overlays -->
+    <div class="data-scroll-overlay left hidden lg:block">
+        <div class="data-scroll-content">
+            A0133-MT01353-B24-SYNC-GTGC01001010-A0134-MT01354-B25-A0135-MT01355-B26-ABSOLUTE-BORDER-A0136-MT01356
+        </div>
+    </div>
+    <div class="data-scroll-overlay right hidden lg:block">
+        <div class="data-scroll-content" style="animation-delay: -10s;">
+            MT-2353-B24-MT-2354-B25-MT-2355-B26-SYNC-MT-2356-B27-MT-2357-B28-ABSOLUTE-LINE-MT-2358-PATTERN
+        </div>
+    </div>
+
+    <!-- Pattern Alert (Hidden by default, triggered by JS) -->
+    <div class="pattern-alert blue" id="pattern-alert">
+        <h2>PATTERN BLUE</h2>
+        <p>血液パターン青 // BLOOD TYPE CONFIRMED</p>
+    </div>
+
+    <!-- Warning Screen (Hidden by default) -->
+    <div class="eva-warning-screen" id="warning-screen">
+        <div class="warning-text">WARNING</div>
+        <div class="warning-jp">警告</div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="nerv-status-bar">
+        <div class="status-group">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>MAGI ONLINE</span>
+            </div>
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>SYNC STABLE</span>
+            </div>
+            <div class="status-item">
+                <div class="status-dot warning"></div>
+                <span>AT FIELD</span>
+            </div>
+        </div>
+        <div class="status-group">
+            <span style="color: #666;">AEGIS CORE NEXUS</span>
+        </div>
+        <div class="status-group">
+            <div class="status-item">
+                <span>DEPTH:</span>
+                <span id="depth-value">-1350m</span>
+            </div>
+            <div class="status-item">
+                <span>TIME:</span>
+                <span id="status-time">00:00:00</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Loading Screen -->
     <div id="loading-screen">
         <div class="w-20 h-20 relative">
@@ -839,10 +1689,13 @@
                 <polygon points="50,5 95,75 5,75" fill="none" stroke="#ff6b00" stroke-width="2"/>
             </svg>
         </div>
-        <div class="loading-text eva-title">INITIALIZING MAGI SYSTEM</div>
+        <div class="loading-text eva-title">INITIALIZING ORACLE SYSTEM</div>
         <div class="loading-bar"></div>
         <div class="text-xs text-gray-600 mt-4 jp-text">神経接続を確立中...</div>
     </div>
+
+    <!-- NERV Sync Display Background -->
+    <canvas id="nerv-bg-canvas"></canvas>
 
     <!-- Three.js Canvas -->
     <canvas id="three-canvas"></canvas>
@@ -871,9 +1724,9 @@
     <!-- Top System Bar -->
     <div class="fixed top-0 left-0 right-0 z-[60] bg-black/95 border-b border-orange-500/50 py-1 px-4 flex justify-between items-center text-xs">
         <div class="flex items-center gap-6">
-            <span class="text-orange-500 eva-title tracking-wider">NERV_HQ_TOKYO-3</span>
+            <span class="text-orange-500 eva-title tracking-wider">AEGIS_HQ_NEO-CITY</span>
             <span class="text-gray-600">|</span>
-            <span class="text-gray-500">MAGI.SYS <span class="text-green-500">ONLINE</span></span>
+            <span class="text-gray-500">ORACLE.SYS <span class="text-green-500">ONLINE</span></span>
             <span class="text-gray-600">|</span>
             <span class="text-gray-500">AT_FIELD: <span class="text-green-500">NOMINAL</span></span>
         </div>
@@ -899,7 +1752,7 @@
                             </svg>
                         </div>
                         <div>
-                            <span class="eva-title text-2xl tracking-[0.2em]" style="color: var(--nerv-orange); text-shadow: 0 0 10px var(--nerv-orange);">NERV</span>
+                            <span class="eva-title text-2xl tracking-[0.2em]" style="color: var(--nerv-orange); text-shadow: 0 0 10px var(--nerv-orange);">AEGIS</span>
                             <span class="block text-[8px] text-gray-500 tracking-wider">HEADQUARTERS</span>
                         </div>
                     </div>
@@ -910,15 +1763,15 @@
                 </div>
                 <div class="hidden md:flex items-center gap-1">
                     <a href="#home" class="nav-item cursor-pointer rgb-split">HOME</a>
-                    <a href="#evangelions" class="nav-item cursor-pointer rgb-split">EVANGELIONS</a>
+                    <a href="#titans" class="nav-item cursor-pointer rgb-split">TITANS</a>
                     <a href="#pilots" class="nav-item cursor-pointer rgb-split">PILOTS</a>
-                    <a href="#magi" class="nav-item cursor-pointer rgb-split">MAGI</a>
+                    <a href="#operations" class="nav-item cursor-pointer rgb-split">ORACLE</a>
                     <a href="#terminal" class="nav-item cursor-pointer rgb-split">TERMINAL</a>
                     <a href="#angels" class="nav-item cursor-pointer rgb-split">ANGELS</a>
                 </div>
                 <div class="flex items-center gap-4">
                     <div class="text-xs font-mono text-gray-500">
-                        <span class="text-orange-500">SYS:</span> <span id="clock" class="text-white" style="font-family: 'Orbitron';">00:00:00</span>
+                        <span class="text-orange-500">SYS:</span> <span id="clock" class="text-white" style="font-family: 'Oswald';">00:00:00</span>
                     </div>
                     <div class="text-xs font-mono text-gray-500">
                         <span class="text-orange-500">DATE:</span> <span id="date" class="text-white">0000.00.00</span>
@@ -931,16 +1784,16 @@
     <!-- Hero Section -->
     <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden">
         <!-- Background Text -->
-        <div class="bg-text" style="top: 10%; left: -5%;">EVANGELION</div>
+        <div class="bg-text" style="top: 10%; left: -5%;">TITAN</div>
         <div class="bg-text" style="bottom: 10%; right: -5%;">新世紀</div>
         
         <!-- Side Decorations -->
         <div class="absolute left-8 top-1/2 transform -translate-y-1/2 hidden lg:block">
-            <div class="jp-text text-6xl opacity-10 vertical-text" style="writing-mode: vertical-rl; font-family: 'Noto Sans JP'; font-weight: 900;">使徒、襲来</div>
+            <div class="jp-text text-6xl opacity-15 vertical-text" style="writing-mode: vertical-rl; font-family: 'Sawarabi Gothic', 'Noto Sans JP', sans-serif; font-weight: 700;">使徒、襲来</div>
         </div>
         
         <div class="absolute right-8 top-1/4 hidden lg:block text-right">
-            <div class="text-xs text-orange-500/50 font-mono space-y-1">
+            <div class="text-xs eva-warning-text text-orange-500/50 space-y-1">
                 <p>PRIORITY: <span class="text-red-500 warning-flash">ALPHA</span></p>
                 <p>CLEARANCE: LEVEL-5</p>
                 <p>STATUS: ACTIVE</p>
@@ -961,21 +1814,21 @@
                         <svg viewBox="0 0 100 100" class="w-24 h-24 text-orange-500">
                             <polygon points="50,10 90,90 10,90" fill="none" stroke="currentColor" stroke-width="2"/>
                             <circle cx="50" cy="55" r="12" fill="none" stroke="currentColor" stroke-width="2"/>
-                            <text x="50" y="60" text-anchor="middle" fill="currentColor" font-size="10" font-family="Teko">NERV</text>
+                            <text x="50" y="60" text-anchor="middle" fill="currentColor" font-size="10" font-family="Teko">AEGIS</text>
                         </svg>
                     </div>
                 </div>
                 
                 <p class="text-orange-500 text-xs tracking-[0.5em] mb-4 eva-title">SPECIAL AGENCY</p>
-                <h1 class="nerv-logo glitch rgb-split" data-text="NERV">NERV</h1>
+                <h1 class="nerv-logo glitch rgb-split" data-text="AEGIS">AEGIS</h1>
                 <div class="mt-6 space-y-2">
                     <p class="text-gray-400 text-xl tracking-[0.3em] jp-text">神の王座、人の再生のために</p>
-                    <p class="text-orange-500/70 text-sm tracking-widest eva-title">GOD'S IN HIS HEAVEN. ALL'S RIGHT WITH THE WORLD.</p>
+                    <p class="text-orange-500/70 text-sm tracking-widest eva-title">Order Through Unity. Strength Through Sacrifice.</p>
                 </div>
             </div>
             
             <div class="terminal-text text-left max-w-2xl mx-auto mb-8 text-sm px-4">
-                > INITIALIZING CENTRAL DOGMA SYSTEMS... MAGI CONSENSUS ACHIEVED
+                > INITIALIZING CORE NEXUS SYSTEMS... ORACLE CONSENSUS ACHIEVED
             </div>
 
             <!-- Operation Timer -->
@@ -1002,28 +1855,28 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto perspective-container">
                 <div class="animated-border card-3d">
                     <div class="p-6 bg-black">
-                        <p class="text-5xl font-bold text-orange-500 glow-text" style="font-family: 'Orbitron';">03</p>
+                        <p class="text-5xl font-bold text-orange-500 glow-text" style="font-family: 'Oswald';">03</p>
                         <p class="text-xs text-gray-500 mt-2 eva-title tracking-wider">ACTIVE UNITS</p>
                         <div class="warning-stripes-red mt-3"></div>
                     </div>
                 </div>
                 <div class="animated-border card-3d">
                     <div class="p-6 bg-black">
-                        <p class="text-5xl font-bold text-green-500 glow-text" style="font-family: 'Orbitron';">17</p>
+                        <p class="text-5xl font-bold text-green-500 glow-text" style="font-family: 'Oswald';">17</p>
                         <p class="text-xs text-gray-500 mt-2 eva-title tracking-wider">ANGELS NEUTRALIZED</p>
                         <div class="warning-stripes-red mt-3"></div>
                     </div>
                 </div>
                 <div class="animated-border card-3d">
                     <div class="p-6 bg-black">
-                        <p class="text-5xl font-bold text-purple-500 glow-text" style="font-family: 'Orbitron';">400%</p>
+                        <p class="text-5xl font-bold text-purple-500 glow-text" style="font-family: 'Oswald';">400%</p>
                         <p class="text-xs text-gray-500 mt-2 eva-title tracking-wider">MAX SYNC RATE</p>
                         <div class="warning-stripes-red mt-3"></div>
                     </div>
                 </div>
                 <div class="animated-border card-3d">
                     <div class="p-6 bg-black">
-                        <p class="text-5xl font-bold text-red-500 glow-text" style="font-family: 'Orbitron';">∞</p>
+                        <p class="text-5xl font-bold text-red-500 glow-text" style="font-family: 'Oswald';">∞</p>
                         <p class="text-xs text-gray-500 mt-2 eva-title tracking-wider">HUMAN POTENTIAL</p>
                         <div class="warning-stripes-red mt-3"></div>
                     </div>
@@ -1056,7 +1909,7 @@
                 <div>
                     <p class="text-red-500 font-bold text-2xl tracking-widest eva-title glow-text" style="color: #dc2626;">PATTERN BLUE DETECTED</p>
                     <p class="text-gray-400 text-sm mt-2 jp-text">血液パターン青 // Angel signature identified in sector 7-G</p>
-                    <p class="text-xs text-gray-500 mt-2">TIMESTAMP: <span id="alert-time" class="text-red-500" style="font-family: 'Orbitron';">00:00:00</span> | THREAT LEVEL: <span class="text-red-500 warning-flash font-bold">CRITICAL</span></p>
+                    <p class="text-xs text-gray-500 mt-2">TIMESTAMP: <span id="alert-time" class="text-red-500" style="font-family: 'Oswald';">00:00:00</span> | THREAT LEVEL: <span class="text-red-500 warning-flash font-bold">CRITICAL</span></p>
                 </div>
             </div>
             <div class="text-right">
@@ -1079,8 +1932,183 @@
         </div>
     </div>
 
+    <!-- NERV MAGI Computer Display Section -->
+    <section class="py-16 px-4 bg-black relative overflow-hidden">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="eva-title text-3xl text-orange-500 mb-2">ORACLE SYSTEM INTERFACE</h2>
+                <p class="text-xs text-gray-500 eva-warning-text">SYNCHRONIZATION DATA STREAM // REAL-TIME MONITORING</p>
+            </div>
+
+            <div class="nerv-computer-display">
+                <div class="magi-data-grid">
+                    <!-- Left Column - Green Chevrons -->
+                    <div class="magi-column">
+                        <div class="magi-row">
+                            <span class="data-label">A0133</span>
+                            <span class="data-label">01011</span>
+                            <span class="data-label data-border">MT-01353</span>
+                            <div class="chevron-bar green" style="width: 120px;"></div>
+                            <span class="data-label">B24</span>
+                        </div>
+                        <div class="magi-row">
+                            <span class="data-label">A0134</span>
+                            <span class="data-label">01100</span>
+                            <span class="data-label data-border">MT-01354</span>
+                            <div class="chevron-bar green" style="width: 100px;"></div>
+                            <span class="data-label">B25</span>
+                        </div>
+                        <div class="magi-row">
+                            <span class="data-label">A0135</span>
+                            <span class="data-label">01101</span>
+                            <span class="data-label data-border">MT-01355</span>
+                            <div class="chevron-bar green" style="width: 130px;"></div>
+                            <span class="data-label">B26</span>
+                        </div>
+                        <div class="magi-row">
+                            <span class="data-label">A0136</span>
+                            <span class="data-label">01110</span>
+                            <span class="data-label data-border">MT-01356</span>
+                            <div class="chevron-bar green" style="width: 90px;"></div>
+                            <span class="data-label">B27</span>
+                        </div>
+                        <div class="magi-row">
+                            <span class="data-label">A0137</span>
+                            <span class="data-label">01111</span>
+                            <span class="data-label data-border">MT-01357</span>
+                            <div class="chevron-bar green" style="width: 110px;"></div>
+                            <span class="data-label">B28</span>
+                        </div>
+                        <div class="magi-row">
+                            <span class="data-label">A0138</span>
+                            <span class="data-label">10000</span>
+                            <span class="data-label data-border">MT-01358</span>
+                            <div class="chevron-bar green" style="width: 85px;"></div>
+                            <span class="data-label">B29</span>
+                        </div>
+                        <div class="magi-row mt-4">
+                            <span class="data-label">GTGC01001010</span>
+                            <span class="sync-box sync-blink">SYNC</span>
+                            <span class="data-label data-border">MTA-0100</span>
+                        </div>
+                        <div class="magi-row">
+                            <span class="data-label">GACTA0111010</span>
+                        </div>
+                    </div>
+
+                    <!-- Center Divider -->
+                    <div class="flex flex-col items-center justify-center relative">
+                        <div class="center-divider h-full"></div>
+                        <div class="absolute top-4 text-center">
+                            <span class="data-label highlight">ABSOLUTE-L</span>
+                        </div>
+                        <div class="absolute top-1/2 transform -translate-y-1/2">
+                            <span class="data-label" style="writing-mode: vertical-rl; font-size: 8px;">BORDER-LINE</span>
+                        </div>
+                        <div class="absolute bottom-4 text-center">
+                            <span class="data-label highlight">ABSOLUTE-L</span>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Red Chevrons -->
+                    <div class="magi-column">
+                        <div class="magi-row justify-end">
+                            <span class="data-label">B24</span>
+                            <div class="chevron-bar red" style="width: 120px; transform: scaleX(-1);"></div>
+                            <span class="data-label data-border">MT-2353</span>
+                        </div>
+                        <div class="magi-row justify-end">
+                            <span class="data-label">B25</span>
+                            <div class="chevron-bar red" style="width: 95px; transform: scaleX(-1);"></div>
+                            <span class="data-label data-border">MT-2354</span>
+                        </div>
+                        <div class="magi-row justify-end">
+                            <span class="data-label">B26</span>
+                            <div class="chevron-bar red" style="width: 125px; transform: scaleX(-1);"></div>
+                            <span class="data-label data-border">MT-2355</span>
+                        </div>
+                        <div class="magi-row justify-end">
+                            <span class="data-label">B27</span>
+                            <div class="chevron-bar red" style="width: 100px; transform: scaleX(-1);"></div>
+                            <span class="data-label data-border">MT-2356</span>
+                        </div>
+                        <div class="magi-row justify-end">
+                            <span class="data-label">B28</span>
+                            <div class="chevron-bar red" style="width: 115px; transform: scaleX(-1);"></div>
+                            <span class="data-label data-border">MT-2357</span>
+                        </div>
+                        <div class="magi-row justify-end">
+                            <span class="data-label">B29</span>
+                            <div class="chevron-bar red" style="width: 80px; transform: scaleX(-1);"></div>
+                            <span class="data-label data-border">MT-2358</span>
+                            <span class="data-label">A0</span>
+                        </div>
+                        <div class="magi-row justify-end mt-4">
+                            <span class="data-label data-border">MT-2359</span>
+                            <span class="data-label">A0</span>
+                        </div>
+                        <div class="magi-row justify-end">
+                            <span class="sync-box sync-blink">SYNC</span>
+                            <span class="sync-box sync-blink" style="animation-delay: 0.5s;">SYNC</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Data Row -->
+                <div class="mt-6 pt-4 border-t border-orange-500/30">
+                    <div class="flex justify-between items-center text-xs">
+                        <div class="flex gap-4">
+                            <span class="data-label">GTGA0101101</span>
+                            <span class="data-label data-border">MTA</span>
+                            <span class="data-label">01011</span>
+                        </div>
+                        <div class="flex gap-2 items-center">
+                            <span class="data-label highlight">PATTERN ANALYSIS</span>
+                            <span class="data-label">ACTIVE</span>
+                        </div>
+                        <div class="flex gap-4">
+                            <span class="data-label">BO</span>
+                            <span class="data-label">TRANSMISSION OK</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Animated Scan Line -->
+                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-green-500/50 to-transparent" style="animation: scan-line 3s linear infinite;"></div>
+            </div>
+
+            <!-- Additional Data Panels -->
+            <div class="grid grid-cols-3 gap-4 mt-6">
+                <div class="nerv-computer-display p-4">
+                    <div class="data-label highlight mb-2">MELCHIOR-1</div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="chevron-bar green" style="width: 60px; height: 12px;"></div>
+                        <span class="data-label">NOMINAL</span>
+                    </div>
+                    <div class="text-xs text-green-400 font-mono">STATUS: ONLINE</div>
+                </div>
+                <div class="nerv-computer-display p-4">
+                    <div class="data-label highlight mb-2">BALTHASAR-2</div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="chevron-bar green" style="width: 50px; height: 12px;"></div>
+                        <span class="data-label">NOMINAL</span>
+                    </div>
+                    <div class="text-xs text-green-400 font-mono">STATUS: ONLINE</div>
+                </div>
+                <div class="nerv-computer-display p-4">
+                    <div class="data-label highlight mb-2">CASPER-3</div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="chevron-bar green" style="width: 55px; height: 12px;"></div>
+                        <span class="data-label">NOMINAL</span>
+                    </div>
+                    <div class="text-xs text-green-400 font-mono">STATUS: ONLINE</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Eva Units Section -->
-    <section id="evangelions" class="py-24 px-4 relative overflow-hidden">
+    <section id="titans" class="py-24 px-4 relative overflow-hidden">
         <!-- Section Japanese Title -->
         <div class="absolute -left-4 top-32 hidden lg:block">
             <div class="text-[10rem] jp-text font-black text-orange-500/5 transform -rotate-90 origin-left" style="font-family: 'Noto Sans JP';">エヴァンゲリオン</div>
@@ -1097,12 +2125,12 @@
                     <span>第弐話 // EPISODE 02</span>
                 </div>
                 <p class="text-orange-500 text-xs tracking-[0.5em] mb-4 eva-title">汎用人型決戦兵器</p>
-                <h2 class="section-header text-5xl font-bold eva-title">EVANGELION UNITS</h2>
+                <h2 class="section-header text-5xl font-bold eva-title">TITAN UNITS</h2>
                 <p class="text-gray-500 text-sm mt-6 tracking-widest">MULTIPURPOSE HUMANOID DECISIVE WEAPON</p>
             </div>
 
             <div class="grid md:grid-cols-3 gap-10 perspective-container">
-                <!-- EVA-00 -->
+                <!-- TITAN-00 -->
                 <div class="eva-card eva-00 p-6 card-3d">
                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-blue-400 to-transparent"></div>
                     <div class="flex items-center justify-between mb-4">
@@ -1113,10 +2141,10 @@
                     </div>
                     <div class="flex items-baseline gap-2 mb-3">
                         <span class="text-xs text-gray-500 eva-title">UNIT</span>
-                        <h3 class="text-5xl font-black glow-text" style="font-family: 'Orbitron'; color: #3b82f6;">00</h3>
+                        <h3 class="text-5xl font-black glow-text" style="font-family: 'Oswald'; color: #3b82f6;">00</h3>
                         <span class="text-xs text-blue-500/50 ml-2 jp-text">零号機</span>
                     </div>
-                    <p class="text-gray-400 text-sm mb-4 border-l-2 border-blue-500/30 pl-3">First successful Evangelion unit. Redesigned after initial activation incident. Soul origin: <span class="text-blue-400">CLASSIFIED</span></p>
+                    <p class="text-gray-400 text-sm mb-4 border-l-2 border-blue-500/30 pl-3">First successful Titan unit. Redesigned after initial activation incident. Soul origin: <span class="text-blue-400">CLASSIFIED</span></p>
                     
                     <div class="space-y-4">
                         <div>
@@ -1153,17 +2181,17 @@
                             <div>
                                 <p class="text-xs text-gray-500">DESIGNATED PILOT</p>
                                 <p class="text-blue-400 font-bold">綾波 レイ</p>
-                                <p class="text-xs text-gray-500">REI AYANAMI</p>
+                                <p class="text-xs text-gray-500">YUKI TANAKA</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-xs text-gray-500">CHILD</p>
-                                <p class="text-2xl font-bold text-blue-500" style="font-family: 'Orbitron';">1st</p>
+                                <p class="text-xs text-gray-500">PILOT</p>
+                                <p class="text-2xl font-bold text-blue-500" style="font-family: 'Oswald';">1st</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- EVA-01 -->
+                <!-- TITAN-01 -->
                 <div class="eva-card eva-01 p-6 transform md:scale-105 relative card-3d z-10">
                     <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-purple-500 px-6 py-1 text-xs font-bold text-black eva-title tracking-widest">
                         PRIMARY UNIT
@@ -1177,10 +2205,10 @@
                     </div>
                     <div class="flex items-baseline gap-2 mb-3">
                         <span class="text-xs text-gray-500 eva-title">UNIT</span>
-                        <h3 class="text-5xl font-black glow-text" style="font-family: 'Orbitron'; color: #7c3aed;">01</h3>
+                        <h3 class="text-5xl font-black glow-text" style="font-family: 'Oswald'; color: #7c3aed;">01</h3>
                         <span class="text-xs text-purple-500/50 ml-2 jp-text">初号機</span>
                     </div>
-                    <p class="text-gray-400 text-sm mb-4 border-l-2 border-purple-500/30 pl-3">Contains the soul of <span class="text-purple-400">Yui Ikari</span>. Only unit to achieve true berserk mode. Possesses <span class="text-green-400">S² Engine</span>.</p>
+                    <p class="text-gray-400 text-sm mb-4 border-l-2 border-purple-500/30 pl-3">Contains the soul of <span class="text-purple-400">Subject Zero</span>. Only unit to achieve true berserk mode. Possesses <span class="text-green-400">S² Engine</span>.</p>
                     
                     <div class="space-y-4">
                         <div>
@@ -1226,17 +2254,17 @@
                             <div>
                                 <p class="text-xs text-gray-500">DESIGNATED PILOT</p>
                                 <p class="text-purple-400 font-bold">碇 シンジ</p>
-                                <p class="text-xs text-gray-500">SHINJI IKARI</p>
+                                <p class="text-xs text-gray-500">KENJI MORI</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-xs text-gray-500">CHILD</p>
-                                <p class="text-2xl font-bold text-purple-500" style="font-family: 'Orbitron';">3rd</p>
+                                <p class="text-xs text-gray-500">PILOT</p>
+                                <p class="text-2xl font-bold text-purple-500" style="font-family: 'Oswald';">3rd</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- EVA-02 -->
+                <!-- TITAN-02 -->
                 <div class="eva-card eva-02 p-6 card-3d">
                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 via-red-400 to-transparent"></div>
                     <div class="flex items-center justify-between mb-4">
@@ -1247,7 +2275,7 @@
                     </div>
                     <div class="flex items-baseline gap-2 mb-3">
                         <span class="text-xs text-gray-500 eva-title">UNIT</span>
-                        <h3 class="text-5xl font-black glow-text" style="font-family: 'Orbitron'; color: #dc2626;">02</h3>
+                        <h3 class="text-5xl font-black glow-text" style="font-family: 'Oswald'; color: #dc2626;">02</h3>
                         <span class="text-xs text-red-500/50 ml-2 jp-text">弐号機</span>
                     </div>
                     <p class="text-gray-400 text-sm mb-4 border-l-2 border-red-500/30 pl-3">First production model. Optimized for direct combat operations. Built in <span class="text-red-400">Germany</span>.</p>
@@ -1287,11 +2315,11 @@
                             <div>
                                 <p class="text-xs text-gray-500">DESIGNATED PILOT</p>
                                 <p class="text-red-400 font-bold">惣流・アスカ・ラングレー</p>
-                                <p class="text-xs text-gray-500">ASUKA LANGLEY SORYU</p>
+                                <p class="text-xs text-gray-500">ELENA RICHTER</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-xs text-gray-500">CHILD</p>
-                                <p class="text-2xl font-bold text-red-500" style="font-family: 'Orbitron';">2nd</p>
+                                <p class="text-xs text-gray-500">PILOT</p>
+                                <p class="text-2xl font-bold text-red-500" style="font-family: 'Oswald';">2nd</p>
                             </div>
                         </div>
                     </div>
@@ -1361,34 +2389,34 @@
         <div class="max-w-7xl mx-auto relative z-10">
             <div class="text-center mb-16">
                 <p class="text-orange-500 text-xs tracking-[0.5em] mb-2">適格者 // QUALIFIED PERSONS</p>
-                <h2 class="section-header text-4xl font-bold" style="font-family: 'Orbitron';">EVA PILOTS</h2>
-                <p class="text-gray-500 text-xs mt-6">THE CHILDREN - DESIGNATED PILOTS OF EVANGELION UNITS</p>
+                <h2 class="section-header text-4xl font-bold" style="font-family: 'Oswald';">EVA PILOTS</h2>
+                <p class="text-gray-500 text-xs mt-6">THE PILOTS - DESIGNATED PILOTS OF TITAN UNITS</p>
             </div>
 
             <div class="grid md:grid-cols-3 gap-8">
-                <!-- Rei -->
+                <!-- Yuki -->
                 <div class="data-panel p-6 relative group">
-                    <div class="absolute top-2 right-2 text-xs text-gray-600">NERV//PILOT_DATA</div>
+                    <div class="absolute top-2 right-2 text-xs text-gray-600">AEGIS//PILOT_DATA</div>
                     <div class="bracket-corners p-6">
                         <div class="w-24 h-24 mx-auto mb-4 relative">
                             <div class="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-900/20 border-2 border-blue-500"></div>
                             <div class="absolute inset-0 rounded-full flex items-center justify-center">
-                                <span class="text-4xl font-black text-blue-500" style="font-family: 'Orbitron';">I</span>
+                                <span class="text-4xl font-black text-blue-500" style="font-family: 'Oswald';">I</span>
                             </div>
                             <div class="absolute -inset-2 rounded-full border border-blue-500/30 rotating-element"></div>
                         </div>
-                        <h3 class="text-xl font-bold text-center text-blue-400" style="font-family: 'Orbitron';">REI AYANAMI</h3>
+                        <h3 class="text-xl font-bold text-center text-blue-400" style="font-family: 'Oswald';">YUKI TANAKA</h3>
                         <p class="text-center text-2xl jp-text text-blue-500/50 mt-1">綾波 レイ</p>
-                        <p class="text-center text-gray-500 text-xs mt-2 tracking-widest">FIRST CHILD</p>
+                        <p class="text-center text-gray-500 text-xs mt-2 tracking-widest">PILOT ALPHA</p>
                     </div>
                     <div class="mt-6 space-y-3 text-xs">
                         <div class="flex justify-between border-b border-gray-800 pb-2">
                             <span class="text-gray-500">DESIGNATION</span>
-                            <span class="text-blue-400">FIRST CHILD</span>
+                            <span class="text-blue-400">PILOT ALPHA</span>
                         </div>
                         <div class="flex justify-between border-b border-gray-800 pb-2">
                             <span class="text-gray-500">ASSIGNED UNIT</span>
-                            <span class="text-blue-400">EVA-00 PROTOTYPE</span>
+                            <span class="text-blue-400">TITAN-00 PROTOTYPE</span>
                         </div>
                         <div class="flex justify-between border-b border-gray-800 pb-2">
                             <span class="text-gray-500">STATUS</span>
@@ -1404,7 +2432,7 @@
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-500">GUARDIAN</span>
-                            <span class="text-gray-400">GENDO IKARI</span>
+                            <span class="text-gray-400">DIRECTOR HAYASHI</span>
                         </div>
                     </div>
                     <div class="mt-4 pt-4 border-t border-gray-800">
@@ -1412,32 +2440,32 @@
                     </div>
                 </div>
 
-                <!-- Shinji -->
+                <!-- Kenji -->
                 <div class="data-panel p-6 relative group transform md:scale-105" style="border-color: #7c3aed;">
                     <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-500 px-4 py-1 text-xs font-bold text-black tracking-widest">
                         PRIMARY PILOT
                     </div>
-                    <div class="absolute top-2 right-2 text-xs text-gray-600">NERV//PILOT_DATA</div>
+                    <div class="absolute top-2 right-2 text-xs text-gray-600">AEGIS//PILOT_DATA</div>
                     <div class="bracket-corners p-6" style="--nerv-orange: #7c3aed;">
                         <div class="w-24 h-24 mx-auto mb-4 relative">
                             <div class="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/20 to-purple-900/20 border-2 border-purple-500"></div>
                             <div class="absolute inset-0 rounded-full flex items-center justify-center">
-                                <span class="text-4xl font-black text-purple-500" style="font-family: 'Orbitron';">III</span>
+                                <span class="text-4xl font-black text-purple-500" style="font-family: 'Oswald';">III</span>
                             </div>
                             <div class="absolute -inset-2 rounded-full border border-purple-500/30 rotating-element"></div>
                         </div>
-                        <h3 class="text-xl font-bold text-center text-purple-400" style="font-family: 'Orbitron';">SHINJI IKARI</h3>
+                        <h3 class="text-xl font-bold text-center text-purple-400" style="font-family: 'Oswald';">KENJI MORI</h3>
                         <p class="text-center text-2xl jp-text text-purple-500/50 mt-1">碇 シンジ</p>
-                        <p class="text-center text-gray-500 text-xs mt-2 tracking-widest">THIRD CHILD</p>
+                        <p class="text-center text-gray-500 text-xs mt-2 tracking-widest">PILOT GAMMA</p>
                     </div>
                     <div class="mt-6 space-y-3 text-xs">
                         <div class="flex justify-between border-b border-gray-800 pb-2">
                             <span class="text-gray-500">DESIGNATION</span>
-                            <span class="text-purple-400">THIRD CHILD</span>
+                            <span class="text-purple-400">PILOT GAMMA</span>
                         </div>
                         <div class="flex justify-between border-b border-gray-800 pb-2">
                             <span class="text-gray-500">ASSIGNED UNIT</span>
-                            <span class="text-purple-400">EVA-01 TEST TYPE</span>
+                            <span class="text-purple-400">TITAN-01 TEST TYPE</span>
                         </div>
                         <div class="flex justify-between border-b border-gray-800 pb-2">
                             <span class="text-gray-500">STATUS</span>
@@ -1453,7 +2481,7 @@
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-500">GUARDIAN</span>
-                            <span class="text-gray-400">MISATO KATSURAGI</span>
+                            <span class="text-gray-400">CAPTAIN NAKAMURA</span>
                         </div>
                     </div>
                     <div class="mt-4 pt-4 border-t border-gray-800">
@@ -1461,29 +2489,29 @@
                     </div>
                 </div>
 
-                <!-- Asuka -->
+                <!-- Elena -->
                 <div class="data-panel p-6 relative group" style="border-color: #dc2626;">
-                    <div class="absolute top-2 right-2 text-xs text-gray-600">NERV//PILOT_DATA</div>
+                    <div class="absolute top-2 right-2 text-xs text-gray-600">AEGIS//PILOT_DATA</div>
                     <div class="bracket-corners p-6" style="--nerv-orange: #dc2626;">
                         <div class="w-24 h-24 mx-auto mb-4 relative">
                             <div class="absolute inset-0 rounded-full bg-gradient-to-br from-red-500/20 to-red-900/20 border-2 border-red-500"></div>
                             <div class="absolute inset-0 rounded-full flex items-center justify-center">
-                                <span class="text-4xl font-black text-red-500" style="font-family: 'Orbitron';">II</span>
+                                <span class="text-4xl font-black text-red-500" style="font-family: 'Oswald';">II</span>
                             </div>
                             <div class="absolute -inset-2 rounded-full border border-red-500/30 rotating-element"></div>
                         </div>
-                        <h3 class="text-xl font-bold text-center text-red-400" style="font-family: 'Orbitron';">ASUKA LANGLEY</h3>
+                        <h3 class="text-xl font-bold text-center text-red-400" style="font-family: 'Oswald';">ELENA RICHTER</h3>
                         <p class="text-center text-lg jp-text text-red-500/50 mt-1">惣流・アスカ・ラングレー</p>
-                        <p class="text-center text-gray-500 text-xs mt-2 tracking-widest">SECOND CHILD</p>
+                        <p class="text-center text-gray-500 text-xs mt-2 tracking-widest">PILOT BETA</p>
                     </div>
                     <div class="mt-6 space-y-3 text-xs">
                         <div class="flex justify-between border-b border-gray-800 pb-2">
                             <span class="text-gray-500">DESIGNATION</span>
-                            <span class="text-red-400">SECOND CHILD</span>
+                            <span class="text-red-400">PILOT BETA</span>
                         </div>
                         <div class="flex justify-between border-b border-gray-800 pb-2">
                             <span class="text-gray-500">ASSIGNED UNIT</span>
-                            <span class="text-red-400">EVA-02 PRODUCTION</span>
+                            <span class="text-red-400">TITAN-02 PRODUCTION</span>
                         </div>
                         <div class="flex justify-between border-b border-gray-800 pb-2">
                             <span class="text-gray-500">STATUS</span>
@@ -1499,7 +2527,7 @@
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-500">GUARDIAN</span>
-                            <span class="text-gray-400">MISATO KATSURAGI</span>
+                            <span class="text-gray-400">CAPTAIN NAKAMURA</span>
                         </div>
                     </div>
                     <div class="mt-4 pt-4 border-t border-gray-800">
@@ -1508,26 +2536,26 @@
                 </div>
             </div>
             
-            <!-- SEELE Communication Panels -->
+            <!-- COUNCIL Communication Panels -->
             <div class="mt-16">
-                <h3 class="text-center text-orange-500 text-sm tracking-widest mb-8">SEELE // 人類補完委員会 // COMMUNICATION LINK</h3>
+                <h3 class="text-center text-orange-500 text-sm tracking-widest mb-8">COUNCIL // 統合評議会 // COMMUNICATION LINK</h3>
                 <div class="grid grid-cols-3 md:grid-cols-6 gap-4">
-                    <div class="seele-monolith aspect-[3/4] flex items-center justify-center">
-                        <span class="text-4xl font-black text-red-900/50" style="font-family: 'Orbitron';">01</span>
+                    <div class="council-monolith aspect-[3/4] flex items-center justify-center">
+                        <span class="text-4xl font-black text-red-900/50" style="font-family: 'Oswald';">01</span>
                     </div>
-                    <div class="seele-monolith aspect-[3/4] flex items-center justify-center">
-                        <span class="text-4xl font-black text-red-900/50" style="font-family: 'Orbitron';">02</span>
+                    <div class="council-monolith aspect-[3/4] flex items-center justify-center">
+                        <span class="text-4xl font-black text-red-900/50" style="font-family: 'Oswald';">02</span>
                     </div>
-                    <div class="seele-monolith aspect-[3/4] flex items-center justify-center">
-                        <span class="text-4xl font-black text-red-900/50" style="font-family: 'Orbitron';">03</span>
+                    <div class="council-monolith aspect-[3/4] flex items-center justify-center">
+                        <span class="text-4xl font-black text-red-900/50" style="font-family: 'Oswald';">03</span>
                     </div>
-                    <div class="seele-monolith aspect-[3/4] flex items-center justify-center">
-                        <span class="text-4xl font-black text-red-900/50" style="font-family: 'Orbitron';">04</span>
+                    <div class="council-monolith aspect-[3/4] flex items-center justify-center">
+                        <span class="text-4xl font-black text-red-900/50" style="font-family: 'Oswald';">04</span>
                     </div>
-                    <div class="seele-monolith aspect-[3/4] flex items-center justify-center">
-                        <span class="text-4xl font-black text-red-900/50" style="font-family: 'Orbitron';">05</span>
+                    <div class="council-monolith aspect-[3/4] flex items-center justify-center">
+                        <span class="text-4xl font-black text-red-900/50" style="font-family: 'Oswald';">05</span>
                     </div>
-                    <div class="seele-monolith aspect-[3/4] flex items-center justify-center relative">
+                    <div class="council-monolith aspect-[3/4] flex items-center justify-center relative">
                         <span class="text-red-500 text-xs absolute">SOUND ONLY</span>
                     </div>
                 </div>
@@ -1535,7 +2563,7 @@
         </div>
     </section>
 
-    <!-- MAGI System Section -->
+    <!-- ORACLE SYSTEM Section -->
     <section id="operations" class="py-24 px-4 relative">
         <div class="absolute inset-0 pointer-events-none overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-orange-500/5 to-transparent"></div>
@@ -1544,7 +2572,7 @@
         <div class="max-w-7xl mx-auto relative z-10">
             <div class="text-center mb-16">
                 <p class="text-orange-500 text-xs tracking-[0.5em] mb-2">三賢者システム // SUPERCOMPUTER TRIAD</p>
-                <h2 class="section-header text-4xl font-bold" style="font-family: 'Orbitron';">MAGI SYSTEM</h2>
+                <h2 class="section-header text-4xl font-bold" style="font-family: 'Oswald';">ORACLE SYSTEM</h2>
                 <p class="text-gray-500 text-xs mt-6">MAGUS ARTIFICIAL GUIDANCE INTERFACE</p>
             </div>
 
@@ -1562,7 +2590,7 @@
                         <div class="absolute top-2 left-2 text-xs text-orange-500/50">MAGI_01</div>
                         <div class="text-8xl mb-4 font-black text-orange-500" style="font-family: 'Bebas Neue'; text-shadow: 0 0 30px rgba(255,107,0,0.5);">M</div>
                         <h3 class="text-2xl font-bold text-orange-500 tracking-widest">MELCHIOR</h3>
-                        <p class="text-gray-500 text-sm mt-2">Dr. Akagi as <span class="text-orange-400">Scientist</span></p>
+                        <p class="text-gray-500 text-sm mt-2">Dr. Chen as <span class="text-orange-400">Scientist</span></p>
                         <p class="text-xs text-gray-600 mt-2 jp-text">科学者として</p>
                         <div class="mt-6 space-y-2">
                             <div class="flex justify-between text-xs">
@@ -1584,7 +2612,7 @@
                         <div class="absolute top-2 left-2 text-xs text-orange-500/50">MAGI_02</div>
                         <div class="text-8xl mb-4 font-black text-orange-500" style="font-family: 'Bebas Neue'; text-shadow: 0 0 30px rgba(255,107,0,0.5);">B</div>
                         <h3 class="text-2xl font-bold text-orange-500 tracking-widest">BALTHASAR</h3>
-                        <p class="text-gray-500 text-sm mt-2">Dr. Akagi as <span class="text-orange-400">Mother</span></p>
+                        <p class="text-gray-500 text-sm mt-2">Dr. Chen as <span class="text-orange-400">Mother</span></p>
                         <p class="text-xs text-gray-600 mt-2 jp-text">母親として</p>
                         <div class="mt-6 space-y-2">
                             <div class="flex justify-between text-xs">
@@ -1606,7 +2634,7 @@
                         <div class="absolute top-2 left-2 text-xs text-orange-500/50">MAGI_03</div>
                         <div class="text-8xl mb-4 font-black text-orange-500" style="font-family: 'Bebas Neue'; text-shadow: 0 0 30px rgba(255,107,0,0.5);">C</div>
                         <h3 class="text-2xl font-bold text-orange-500 tracking-widest">CASPER</h3>
-                        <p class="text-gray-500 text-sm mt-2">Dr. Akagi as <span class="text-orange-400">Woman</span></p>
+                        <p class="text-gray-500 text-sm mt-2">Dr. Chen as <span class="text-orange-400">Woman</span></p>
                         <p class="text-xs text-gray-600 mt-2 jp-text">女として</p>
                         <div class="mt-6 space-y-2">
                             <div class="flex justify-between text-xs">
@@ -1632,13 +2660,13 @@
                     <span class="text-xs text-green-500">ALL SYSTEMS NOMINAL</span>
                 </div>
                 
-                <h4 class="text-orange-500 font-bold mb-6 text-lg tracking-widest">CENTRAL DOGMA // SYSTEM STATUS</h4>
+                <h4 class="text-orange-500 font-bold mb-6 text-lg tracking-widest">CORE NEXUS // SYSTEM STATUS</h4>
                 
                 <div class="grid md:grid-cols-4 gap-6">
                     <div class="bg-black/70 border border-orange-500/30 p-6 relative">
                         <div class="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full status-online"></div>
                         <p class="text-gray-500 text-xs mb-2">CPU LOAD</p>
-                        <p class="text-4xl font-black text-orange-500" style="font-family: 'Orbitron';" id="cpu-load">47%</p>
+                        <p class="text-4xl font-black text-orange-500" style="font-family: 'Oswald';" id="cpu-load">47%</p>
                         <div class="sync-bar mt-2">
                             <div class="sync-bar-fill bg-orange-500" style="width: 47%;"></div>
                         </div>
@@ -1646,7 +2674,7 @@
                     <div class="bg-black/70 border border-orange-500/30 p-6 relative">
                         <div class="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full status-online"></div>
                         <p class="text-gray-500 text-xs mb-2">MEMORY USAGE</p>
-                        <p class="text-4xl font-black text-orange-500" style="font-family: 'Orbitron';" id="memory-usage">62%</p>
+                        <p class="text-4xl font-black text-orange-500" style="font-family: 'Oswald';" id="memory-usage">62%</p>
                         <div class="sync-bar mt-2">
                             <div class="sync-bar-fill bg-orange-500" style="width: 62%;"></div>
                         </div>
@@ -1654,13 +2682,13 @@
                     <div class="bg-black/70 border border-orange-500/30 p-6 relative">
                         <div class="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full status-online"></div>
                         <p class="text-gray-500 text-xs mb-2">AT FIELD STATUS</p>
-                        <p class="text-4xl font-black text-green-500" style="font-family: 'Orbitron';">STABLE</p>
+                        <p class="text-4xl font-black text-green-500" style="font-family: 'Oswald';">STABLE</p>
                         <p class="text-xs text-gray-600 mt-2">絶対領域 // ABSOLUTE TERRITORY</p>
                     </div>
                     <div class="bg-black/70 border border-red-500/30 p-6 relative">
                         <div class="absolute top-2 right-2 w-2 h-2 bg-yellow-500 rounded-full warning-flash"></div>
                         <p class="text-gray-500 text-xs mb-2">THREAT LEVEL</p>
-                        <p class="text-4xl font-black text-yellow-500" style="font-family: 'Orbitron';">ELEVATED</p>
+                        <p class="text-4xl font-black text-yellow-500" style="font-family: 'Oswald';">ELEVATED</p>
                         <p class="text-xs text-gray-600 mt-2">PATTERN BLUE DETECTED</p>
                     </div>
                 </div>
@@ -1688,7 +2716,7 @@
                         <p class="text-yellow-500 font-bold">LEVEL 2</p>
                     </div>
                     <div class="bg-black/50 p-3 border-l-2 border-orange-500">
-                        <p class="text-gray-500">MAGI CONSENSUS</p>
+                        <p class="text-gray-500">ORACLE CONSENSUS</p>
                         <p class="text-orange-500 font-bold">2/3</p>
                     </div>
                 </div>
@@ -1706,7 +2734,7 @@
         <div class="max-w-4xl mx-auto relative z-10">
             <div class="text-center mb-8">
                 <p class="text-orange-500 text-xs tracking-[0.5em] mb-2">指令端末 // COMMAND INTERFACE</p>
-                <h2 class="section-header text-4xl font-bold" style="font-family: 'Orbitron';">NERV TERMINAL</h2>
+                <h2 class="section-header text-4xl font-bold" style="font-family: 'Oswald';">AEGIS TERMINAL</h2>
             </div>
 
             <div class="bg-black border-2 border-green-500/50 rounded-lg overflow-hidden relative">
@@ -1720,32 +2748,32 @@
                         <span class="text-green-500 text-xs ml-4 font-mono">MAGI_TERMINAL_v2.0.15</span>
                     </div>
                     <div class="text-xs text-green-500/50">
-                        <span>ROOT@NERV_HQ:</span>
+                        <span>ROOT@AEGIS_HQ:</span>
                         <span class="text-green-500">~/central_dogma</span>
                     </div>
                 </div>
                 
                 <div class="p-6 font-mono text-sm h-96 overflow-y-auto relative" id="terminal-output">
                     <p class="text-green-500">╔══════════════════════════════════════════════════════════════╗</p>
-                    <p class="text-green-500">║         NERV CENTRAL DOGMA - MAIN TERMINAL                   ║</p>
+                    <p class="text-green-500">║         AEGIS CORE NEXUS - MAIN TERMINAL                   ║</p>
                     <p class="text-green-500">║              特務機関ネルフ 中央作戦司令室                      ║</p>
                     <p class="text-green-500">╚══════════════════════════════════════════════════════════════╝</p>
-                    <p class="text-gray-500 mt-4">[SYSTEM] Initializing MAGI connection...</p>
+                    <p class="text-gray-500 mt-4">[SYSTEM] INITIALIZING ORACLE connection...</p>
                     <p class="text-gray-500">[SYSTEM] Authentication verified: LEVEL-5 ACCESS GRANTED</p>
                     <p class="text-gray-500">[SYSTEM] Loading command modules...</p>
                     <p class="text-gray-500">[SYSTEM] Establishing sync with MELCHIOR, BALTHASAR, CASPER...</p>
-                    <p class="text-green-500 mt-2">> MAGI CONSENSUS: 3/3 - SYSTEM READY</p>
+                    <p class="text-green-500 mt-2">> ORACLE CONSENSUS: 3/3 - SYSTEM READY</p>
                     <p class="text-green-500">> 全システム正常稼働中</p>
                     <p class="text-gray-500 mt-4">[LOG] Last angel contact: 72 hours ago</p>
                     <p class="text-gray-500">[LOG] Current defense status: ACTIVE</p>
-                    <p class="text-gray-500">[LOG] Evangelion units: 3 OPERATIONAL</p>
+                    <p class="text-gray-500">[LOG] TITAN UNITS: 3 OPERATIONAL</p>
                     <p class="text-yellow-500 mt-2">[WARNING] Pattern Blue sensors on standby</p>
                     <p class="text-yellow-500">[WARNING] 血液パターン青検出準備完了</p>
                     <p class="text-gray-500 mt-4">[INFO] Type 'help' for available commands</p>
                 </div>
                 
                 <div class="border-t border-green-500/30 p-4 flex items-center gap-2 bg-black/50">
-                    <span class="text-green-500">NERV://</span>
+                    <span class="text-green-500">AEGIS://</span>
                     <span class="text-green-500/50">~$</span>
                     <input type="text" id="terminal-input" class="flex-1 bg-transparent text-green-500 outline-none font-mono text-sm" placeholder="Enter command..." autocomplete="off">
                     <span class="text-green-500 animate-pulse">█</span>
@@ -1758,27 +2786,27 @@
                 <button onclick="executeCommand('pilots')" class="px-3 py-1 border border-green-500/30 text-green-500/70 text-xs hover:bg-green-500/10 transition-all">pilots</button>
                 <button onclick="executeCommand('eva')" class="px-3 py-1 border border-green-500/30 text-green-500/70 text-xs hover:bg-green-500/10 transition-all">eva</button>
                 <button onclick="executeCommand('angels')" class="px-3 py-1 border border-green-500/30 text-green-500/70 text-xs hover:bg-green-500/10 transition-all">angels</button>
-                <button onclick="executeCommand('magi')" class="px-3 py-1 border border-green-500/30 text-green-500/70 text-xs hover:bg-green-500/10 transition-all">magi</button>
+                <button onclick="executeCommand('magi')" class="px-3 py-1 border border-green-500/30 text-green-500/70 text-xs hover:bg-green-500/10 transition-all">ORACLE</button>
                 <button onclick="executeCommand('lilith')" class="px-3 py-1 border border-red-500/30 text-red-500/70 text-xs hover:bg-red-500/10 transition-all">lilith</button>
             </div>
         </div>
     </section>
 
     <!-- Angels Database -->
-    <section class="py-24 px-4 relative overflow-hidden">
+    <section id="angels" class="py-24 px-4 relative overflow-hidden">
         <div class="absolute top-0 right-0 text-[15rem] font-black text-red-500/5 jp-text pointer-events-none">使徒</div>
         
         <div class="max-w-7xl mx-auto relative z-10">
             <div class="text-center mb-16">
                 <p class="text-orange-500 text-xs tracking-[0.5em] mb-2">使徒データベース // ENEMY DATABASE</p>
-                <h2 class="section-header text-4xl font-bold" style="font-family: 'Orbitron';">ANGEL REGISTRY</h2>
+                <h2 class="section-header text-4xl font-bold" style="font-family: 'Oswald';">ANGEL REGISTRY</h2>
                 <p class="text-gray-500 text-xs mt-6">CLASSIFIED INFORMATION - LEVEL 5 CLEARANCE REQUIRED</p>
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
                     <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
-                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">03</p>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Oswald';">03</p>
                     <p class="text-sm text-gray-400 mt-1 tracking-wider">SACHIEL</p>
                     <p class="text-xs text-gray-600 jp-text">サキエル</p>
                     <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
@@ -1786,7 +2814,7 @@
                 </div>
                 <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
                     <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
-                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">04</p>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Oswald';">04</p>
                     <p class="text-sm text-gray-400 mt-1 tracking-wider">SHAMSHEL</p>
                     <p class="text-xs text-gray-600 jp-text">シャムシェル</p>
                     <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
@@ -1794,7 +2822,7 @@
                 </div>
                 <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
                     <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
-                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">05</p>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Oswald';">05</p>
                     <p class="text-sm text-gray-400 mt-1 tracking-wider">RAMIEL</p>
                     <p class="text-xs text-gray-600 jp-text">ラミエル</p>
                     <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
@@ -1802,7 +2830,7 @@
                 </div>
                 <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
                     <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
-                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">06</p>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Oswald';">06</p>
                     <p class="text-sm text-gray-400 mt-1 tracking-wider">GAGHIEL</p>
                     <p class="text-xs text-gray-600 jp-text">ガギエル</p>
                     <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
@@ -1810,7 +2838,7 @@
                 </div>
                 <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
                     <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
-                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">07</p>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Oswald';">07</p>
                     <p class="text-sm text-gray-400 mt-1 tracking-wider">ISRAFEL</p>
                     <p class="text-xs text-gray-600 jp-text">イスラフェル</p>
                     <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
@@ -1818,7 +2846,7 @@
                 </div>
                 <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
                     <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
-                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">08</p>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Oswald';">08</p>
                     <p class="text-sm text-gray-400 mt-1 tracking-wider">SANDALPHON</p>
                     <p class="text-xs text-gray-600 jp-text">サンダルフォン</p>
                     <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
@@ -1826,7 +2854,7 @@
                 </div>
                 <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
                     <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
-                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">09</p>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Oswald';">09</p>
                     <p class="text-sm text-gray-400 mt-1 tracking-wider">MATARAEL</p>
                     <p class="text-xs text-gray-600 jp-text">マトリエル</p>
                     <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
@@ -1834,7 +2862,7 @@
                 </div>
                 <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
                     <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
-                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">10</p>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Oswald';">10</p>
                     <p class="text-sm text-gray-400 mt-1 tracking-wider">SAHAQUIEL</p>
                     <p class="text-xs text-gray-600 jp-text">サハクィエル</p>
                     <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
@@ -1842,7 +2870,7 @@
                 </div>
                 <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
                     <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
-                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">11</p>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Oswald';">11</p>
                     <p class="text-sm text-gray-400 mt-1 tracking-wider">IREUL</p>
                     <p class="text-xs text-gray-600 jp-text">イロウル</p>
                     <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
@@ -1850,7 +2878,7 @@
                 </div>
                 <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
                     <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
-                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">12</p>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Oswald';">12</p>
                     <p class="text-sm text-gray-400 mt-1 tracking-wider">LELIEL</p>
                     <p class="text-xs text-gray-600 jp-text">レリエル</p>
                     <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
@@ -1858,7 +2886,7 @@
                 </div>
                 <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
                     <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
-                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">13</p>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Oswald';">13</p>
                     <p class="text-sm text-gray-400 mt-1 tracking-wider">BARDIEL</p>
                     <p class="text-xs text-gray-600 jp-text">バルディエル</p>
                     <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
@@ -1866,7 +2894,7 @@
                 </div>
                 <div class="bg-black/80 border border-yellow-500/30 p-4 text-center hover:border-yellow-500 transition-all cursor-pointer group relative">
                     <div class="absolute top-1 right-1 w-2 h-2 bg-yellow-500 rounded-full warning-flash"></div>
-                    <p class="text-yellow-500 text-3xl font-bold warning-flash" style="font-family: 'Orbitron';">??</p>
+                    <p class="text-yellow-500 text-3xl font-bold warning-flash" style="font-family: 'Oswald';">??</p>
                     <p class="text-sm text-gray-400 mt-1 tracking-wider">UNKNOWN</p>
                     <p class="text-xs text-gray-600 jp-text">不明</p>
                     <p class="text-xs text-yellow-500 mt-2 tracking-widest">PENDING</p>
@@ -1926,10 +2954,10 @@
                                 <polygon points="50,10 90,90 10,90" fill="currentColor"/>
                             </svg>
                         </div>
-                        <h3 class="nerv-logo text-2xl">NERV</h3>
+                        <h3 class="nerv-logo text-2xl">AEGIS</h3>
                     </div>
                     <p class="text-gray-500 text-sm">Special Agency NERV</p>
-                    <p class="text-gray-500 text-sm">Tokyo-3 Headquarters</p>
+                    <p class="text-gray-500 text-sm">Neo City Headquarters</p>
                     <p class="text-gray-600 text-xs mt-2 jp-text">特務機関ネルフ本部</p>
                     <p class="text-gray-600 text-xs jp-text">第三新東京市</p>
                     <div class="mt-4 text-xs text-orange-500/50">
@@ -1942,7 +2970,7 @@
                     <ul class="space-y-3 text-sm text-gray-500">
                         <li><a href="#" class="hover:text-orange-500 transition-colors flex items-center gap-2"><span class="text-orange-500/50">►</span> Command Center</a></li>
                         <li><a href="#" class="hover:text-orange-500 transition-colors flex items-center gap-2"><span class="text-orange-500/50">►</span> Eva Cages</a></li>
-                        <li><a href="#" class="hover:text-orange-500 transition-colors flex items-center gap-2"><span class="text-orange-500/50">►</span> Central Dogma</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition-colors flex items-center gap-2"><span class="text-orange-500/50">►</span> CORE NEXUS</a></li>
                         <li><a href="#" class="hover:text-orange-500 transition-colors flex items-center gap-2"><span class="text-orange-500/50">►</span> Terminal Dogma</a></li>
                         <li><a href="#" class="hover:text-orange-500 transition-colors flex items-center gap-2"><span class="text-orange-500/50">►</span> GeoFront Access</a></li>
                     </ul>
@@ -1961,11 +2989,11 @@
                     <h4 class="text-orange-500 font-bold mb-4 text-sm tracking-widest">// CLEARANCE</h4>
                     <div class="bg-black/50 border border-orange-500/30 p-4">
                         <p class="text-xs text-gray-500 mb-2">Current Access Level:</p>
-                        <p class="text-orange-500 font-bold text-lg" style="font-family: 'Orbitron';">LEVEL 5</p>
+                        <p class="text-orange-500 font-bold text-lg" style="font-family: 'Oswald';">LEVEL 5</p>
                         <p class="text-xs text-gray-600">RESTRICTED ACCESS</p>
                         <div class="mt-4 space-y-2 text-xs">
                             <div class="flex justify-between">
-                                <span class="text-gray-500">Central Dogma</span>
+                                <span class="text-gray-500">CORE NEXUS</span>
                                 <span class="text-green-500">✓</span>
                             </div>
                             <div class="flex justify-between">
@@ -1988,12 +3016,12 @@
 
             <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                 <div class="text-center md:text-left">
-                    <p class="text-gray-500 text-sm">© 2015 NERV - 神は天にいまし 世は全て事もなし</p>
-                    <p class="text-orange-500/70 text-xs mt-1">God's in His Heaven. All's Right with the World.</p>
+                    <p class="text-gray-500 text-sm">© 2015 AEGIS - 秩序は団結から 力は犠牲から</p>
+                    <p class="text-orange-500/70 text-xs mt-1">Order Through Unity. Strength Through Sacrifice.</p>
                 </div>
                 <div class="text-center">
                     <p class="text-gray-600 text-xs font-mono">DOCUMENT: NERV-HQ-2015-CLASSIFIED</p>
-                    <p class="text-gray-700 text-xs mt-1">SEELE//HUMAN INSTRUMENTALITY PROJECT</p>
+                    <p class="text-gray-700 text-xs mt-1">COUNCIL//HUMAN INSTRUMENTALITY PROJECT</p>
                 </div>
                 <div class="flex items-center gap-4">
                     <div class="text-right text-xs">
@@ -2069,9 +3097,9 @@
 ─────────────────────────────────────
 status   - Display system status
 pilots   - Show pilot information  
-eva      - Evangelion unit status
+eva      - Titan unit status
 angels   - Angel registry
-magi     - MAGI system status
+magi     - ORACLE SYSTEM status
 lilith   - [CLASSIFIED] Terminal Dogma
 adam     - [CLASSIFIED] Origin
 clear    - Clear terminal
@@ -2079,7 +3107,7 @@ clear    - Clear terminal
             'status': `
 [SYSTEM STATUS REPORT]
 ─────────────────────────────────────
-MAGI CONSENSUS: 3/3 ACHIEVED
+ORACLE CONSENSUS: 3/3 ACHIEVED
 AT FIELD: STABLE
 POWER GRID: 100%
 GEOFRONT: SECURE
@@ -2089,11 +3117,11 @@ DEFCON: LEVEL 2
             'pilots': `
 [PILOT DATABASE]
 ─────────────────────────────────────
-1ST CHILD: REI AYANAMI     // EVA-00
+PILOT ALPHA: YUKI TANAKA     // TITAN-00
            綾波レイ         // SYNC: 68.7%
-3RD CHILD: SHINJI IKARI    // EVA-01  
+PILOT GAMMA: KENJI MORI    // TITAN-01  
            碇シンジ         // SYNC: 94.2%
-2ND CHILD: ASUKA LANGLEY   // EVA-02
+PILOT BETA: ELENA RICHTER   // TITAN-02
            惣流・アスカ     // SYNC: 78.9%
 ─────────────────────────────────────`,
             'angels': `
@@ -2106,7 +3134,7 @@ PATTERN BLUE: MONITORING
 ─────────────────────────────────────
 使徒殲滅作戦継続中`,
             'magi': `
-[MAGI SYSTEM STATUS]
+[ORACLE SYSTEM STATUS]
 ─────────────────────────────────────
 MELCHIOR-1: ONLINE  [SCIENTIST]
 BALTHASAR-2: ONLINE [MOTHER]
@@ -2115,7 +3143,7 @@ CASPER-3: ONLINE    [WOMAN]
 CONSENSUS: ACHIEVED
 三賢者システム正常`,
             'eva': `
-[EVANGELION STATUS]
+[TITAN STATUS]
 ─────────────────────────────────────
 UNIT-00: STANDBY   | ARMOR: 94%
 UNIT-01: ACTIVE    | ARMOR: 87% | S²
@@ -2134,7 +3162,7 @@ THIS ATTEMPT HAS BEEN LOGGED
 [ERROR] ACCESS DENIED
 ─────────────────────────────────────
 CLEARANCE LEVEL 7 REQUIRED
-INFORMATION CLASSIFIED BY SEELE
+INFORMATION CLASSIFIED BY COUNCIL
 THIS ATTEMPT HAS BEEN LOGGED
 ─────────────────────────────────────
 [WARNING] 人類補完委員会機密情報`,
@@ -2152,7 +3180,7 @@ THIS ATTEMPT HAS BEEN LOGGED
             // Add command to output
             const cmdLine = document.createElement('p');
             cmdLine.className = 'text-green-500 mt-4';
-            cmdLine.textContent = 'NERV://~$ ' + command;
+            cmdLine.textContent = 'AEGIS://~$ ' + command;
             terminalOutput.appendChild(cmdLine);
 
             // Process command
@@ -2195,6 +3223,210 @@ THIS ATTEMPT HAS BEEN LOGGED
                 }
             });
         });
+
+        // ============================================
+        // AEGIS SYNC DISPLAY BACKGROUND
+        // ============================================
+        const nervBgCanvas = document.getElementById('nerv-bg-canvas');
+        const nervCtx = nervBgCanvas.getContext('2d');
+        
+        function resizeNervCanvas() {
+            nervBgCanvas.width = window.innerWidth;
+            nervBgCanvas.height = window.innerHeight;
+        }
+        resizeNervCanvas();
+        window.addEventListener('resize', resizeNervCanvas);
+
+        let nervTime = 0;
+
+        function drawNervBackground() {
+            nervCtx.clearRect(0, 0, nervBgCanvas.width, nervBgCanvas.height);
+            
+            const w = nervBgCanvas.width;
+            const h = nervBgCanvas.height;
+            
+            // Draw chevron bars on left side
+            const chevronStartX = 50;
+            const chevronWidth = w * 0.25;
+            const chevronHeight = 16;
+            const chevronGap = 28;
+            const chevronCount = Math.floor(h / chevronGap);
+            
+            for (let i = 0; i < chevronCount; i++) {
+                const y = 50 + i * chevronGap;
+                const barWidth = chevronWidth * (0.5 + Math.sin(nervTime * 0.5 + i * 0.3) * 0.3);
+                
+                // Green chevron
+                nervCtx.fillStyle = '#00ff88';
+                nervCtx.shadowColor = '#00ff88';
+                nervCtx.shadowBlur = 10;
+                
+                // Draw chevron shape
+                nervCtx.beginPath();
+                nervCtx.moveTo(chevronStartX, y);
+                nervCtx.lineTo(chevronStartX + barWidth, y);
+                nervCtx.lineTo(chevronStartX + barWidth + 15, y + chevronHeight / 2);
+                nervCtx.lineTo(chevronStartX + barWidth, y + chevronHeight);
+                nervCtx.lineTo(chevronStartX, y + chevronHeight);
+                nervCtx.closePath();
+                nervCtx.fill();
+                
+                // Data label
+                nervCtx.shadowBlur = 0;
+                nervCtx.fillStyle = '#ff6600';
+                nervCtx.font = '9px "Share Tech Mono", monospace';
+                nervCtx.fillText(`A0${133 + i}`, chevronStartX - 40, y + 12);
+                nervCtx.fillText(`MT-0${1353 + i}`, chevronStartX + barWidth + 25, y + 12);
+            }
+            
+            // Draw chevron bars on right side (red)
+            const rightChevronStartX = w - 50;
+            
+            for (let i = 0; i < chevronCount; i++) {
+                const y = 50 + i * chevronGap;
+                const barWidth = chevronWidth * (0.5 + Math.cos(nervTime * 0.5 + i * 0.3) * 0.3);
+                
+                // Red chevron
+                nervCtx.fillStyle = '#ff3333';
+                nervCtx.shadowColor = '#ff3333';
+                nervCtx.shadowBlur = 10;
+                
+                // Draw chevron shape (mirrored)
+                nervCtx.beginPath();
+                nervCtx.moveTo(rightChevronStartX, y);
+                nervCtx.lineTo(rightChevronStartX - barWidth, y);
+                nervCtx.lineTo(rightChevronStartX - barWidth - 15, y + chevronHeight / 2);
+                nervCtx.lineTo(rightChevronStartX - barWidth, y + chevronHeight);
+                nervCtx.lineTo(rightChevronStartX, y + chevronHeight);
+                nervCtx.closePath();
+                nervCtx.fill();
+                
+                // Data label
+                nervCtx.shadowBlur = 0;
+                nervCtx.fillStyle = '#ff6600';
+                nervCtx.fillText(`MT-2${353 + i}`, rightChevronStartX - barWidth - 70, y + 12);
+            }
+            
+            // Draw center divider line
+            nervCtx.strokeStyle = '#ff6600';
+            nervCtx.lineWidth = 2;
+            nervCtx.shadowBlur = 0;
+            nervCtx.beginPath();
+            nervCtx.moveTo(w / 2, 30);
+            nervCtx.lineTo(w / 2, h - 30);
+            nervCtx.stroke();
+            
+            // Border line label
+            nervCtx.save();
+            nervCtx.translate(w / 2, h / 2);
+            nervCtx.rotate(-Math.PI / 2);
+            nervCtx.fillStyle = '#ff6600';
+            nervCtx.font = '10px "Share Tech Mono", monospace';
+            nervCtx.fillText('BORDER-LINE', -40, 4);
+            nervCtx.restore();
+            
+            // Draw sync wave graph in the middle-bottom area
+            const graphY = h * 0.65;
+            const graphHeight = h * 0.25;
+            const graphWidth = w * 0.7;
+            const graphX = (w - graphWidth) / 2;
+            
+            // Graph border
+            nervCtx.strokeStyle = '#cc0000';
+            nervCtx.lineWidth = 1;
+            nervCtx.strokeRect(graphX, graphY - graphHeight / 2, graphWidth, graphHeight);
+            
+            // Corner markers
+            nervCtx.fillStyle = '#cc0000';
+            nervCtx.fillRect(graphX - 5, graphY - graphHeight / 2 - 5, 10, 10);
+            nervCtx.fillRect(graphX + graphWidth - 5, graphY - graphHeight / 2 - 5, 10, 10);
+            
+            // Draw sine waves
+            const waves = [
+                { color: '#ff3333', phase: 0, amplitude: 0.8 },
+                { color: '#3366ff', phase: Math.PI / 3, amplitude: 0.7 },
+                { color: '#ffcc00', phase: Math.PI / 1.5, amplitude: 0.9 }
+            ];
+            
+            waves.forEach(wave => {
+                nervCtx.strokeStyle = wave.color;
+                nervCtx.lineWidth = 2;
+                nervCtx.shadowColor = wave.color;
+                nervCtx.shadowBlur = 5;
+                nervCtx.beginPath();
+                
+                for (let x = 0; x <= graphWidth; x += 2) {
+                    const normalizedX = x / graphWidth;
+                    const y = graphY + Math.sin(normalizedX * Math.PI * 3 + nervTime + wave.phase) * (graphHeight / 2 - 10) * wave.amplitude;
+                    
+                    if (x === 0) {
+                        nervCtx.moveTo(graphX + x, y);
+                    } else {
+                        nervCtx.lineTo(graphX + x, y);
+                    }
+                }
+                nervCtx.stroke();
+                
+                // Draw data points on the wave
+                nervCtx.shadowBlur = 0;
+                for (let i = 0; i <= 10; i++) {
+                    const x = graphX + (graphWidth / 10) * i;
+                    const normalizedX = i / 10;
+                    const y = graphY + Math.sin(normalizedX * Math.PI * 3 + nervTime + wave.phase) * (graphHeight / 2 - 10) * wave.amplitude;
+                    
+                    nervCtx.fillStyle = wave.color;
+                    nervCtx.fillRect(x - 3, y - 3, 6, 6);
+                }
+            });
+            
+            // Graph labels
+            nervCtx.shadowBlur = 0;
+            nervCtx.fillStyle = '#ff6600';
+            nervCtx.font = '10px "Share Tech Mono", monospace';
+            nervCtx.fillText('VERIFYING NEUROLOGICAL LINKUP: CALCULATING SYNCHRONIZATION RATE', graphX + 50, graphY - graphHeight / 2 - 15);
+            
+            nervCtx.fillText('EVA - 01', graphX + 10, graphY - graphHeight / 2 + 40);
+            nervCtx.font = '8px "Share Tech Mono", monospace';
+            nervCtx.fillText('MONITORED TARGET', graphX + 10, graphY - graphHeight / 2 + 25);
+            nervCtx.fillText('SUBJECT', graphX + 10, graphY - graphHeight / 2 + 33);
+            
+            // Bottom axis labels
+            for (let i = 0; i <= 10; i++) {
+                const x = graphX + (graphWidth / 10) * i;
+                const label = -100 + i * 20;
+                nervCtx.fillStyle = '#666';
+                nervCtx.fillText(label.toString(), x - 10, graphY + graphHeight / 2 + 15);
+            }
+            
+            // Y axis markers
+            nervCtx.fillStyle = '#ff6600';
+            nervCtx.strokeStyle = '#ff6600';
+            nervCtx.lineWidth = 1;
+            
+            for (let i = 0; i <= 10; i++) {
+                const y = graphY - graphHeight / 2 + (graphHeight / 10) * i;
+                nervCtx.beginPath();
+                nervCtx.moveTo(graphX - 5, y);
+                nervCtx.lineTo(graphX, y);
+                nervCtx.stroke();
+                
+                const label = (1.3 - i * 0.26).toFixed(2);
+                nervCtx.fillText(label, graphX - 35, y + 3);
+            }
+            
+            // Yellow progress bar
+            const barY = graphY - 10;
+            const barProgress = (Math.sin(nervTime * 0.3) + 1) / 2 * 150 + 50;
+            nervCtx.fillStyle = '#ffcc00';
+            nervCtx.shadowColor = '#ffcc00';
+            nervCtx.shadowBlur = 5;
+            nervCtx.fillRect(graphX + 20, barY, barProgress, 8);
+            
+            nervTime += 0.02;
+            requestAnimationFrame(drawNervBackground);
+        }
+        
+        drawNervBackground();
 
         // THREE.JS SCENE
         const canvas = document.getElementById('three-canvas');
@@ -2416,19 +3648,94 @@ THIS ATTEMPT HAS BEEN LOGGED
         // Console messages
         console.log("%c ╔════════════════════════════════════════════════════════════╗ ", "color: #ff6b00;");
         console.log("%c ║                                                            ║ ", "color: #ff6b00;");
-        console.log("%c ║     ███╗   ██╗███████╗██████╗ ██╗   ██╗                    ║ ", "color: #ff6b00;");
-        console.log("%c ║     ████╗  ██║██╔════╝██╔══██╗██║   ██║                    ║ ", "color: #ff6b00;");
-        console.log("%c ║     ██╔██╗ ██║█████╗  ██████╔╝██║   ██║                    ║ ", "color: #ff6b00;");
-        console.log("%c ║     ██║╚██╗██║██╔══╝  ██╔══██╗╚██╗ ██╔╝                    ║ ", "color: #ff6b00;");
-        console.log("%c ║     ██║ ╚████║███████╗██║  ██║ ╚████╔╝                     ║ ", "color: #ff6b00;");
-        console.log("%c ║     ╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝  ╚═══╝                      ║ ", "color: #ff6b00;");
+        console.log("%c ║     █████╗ ███████╗ ██████╗ ██╗███████╗                    ║ ", "color: #ff6b00;");
+        console.log("%c ║    ██╔══██╗██╔════╝██╔════╝ ██║██╔════╝                    ║ ", "color: #ff6b00;");
+        console.log("%c ║    ███████║█████╗  ██║  ███╗██║███████╗                    ║ ", "color: #ff6b00;");
+        console.log("%c ║    ██╔══██║██╔══╝  ██║   ██║██║╚════██║                    ║ ", "color: #ff6b00;");
+        console.log("%c ║    ██║  ██║███████╗╚██████╔╝██║███████║                    ║ ", "color: #ff6b00;");
+        console.log("%c ║    ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝╚══════╝                    ║ ", "color: #ff6b00;");
         console.log("%c ║                                                            ║ ", "color: #ff6b00;");
-        console.log("%c ║     CENTRAL DOGMA SYSTEMS INITIALIZED                      ║ ", "background: #ff6b00; color: #000; font-weight: bold;");
-        console.log("%c ║     MAGI SYSTEM: ONLINE                                    ║ ", "color: #00ff41;");
+        console.log("%c ║     CORE NEXUS SYSTEMS INITIALIZED                         ║ ", "background: #ff6b00; color: #000; font-weight: bold;");
+        console.log("%c ║     ORACLE SYSTEM: ONLINE                                  ║ ", "color: #00ff41;");
         console.log("%c ║                                                            ║ ", "color: #ff6b00;");
         console.log("%c ╚════════════════════════════════════════════════════════════╝ ", "color: #ff6b00;");
-        console.log("%c God's in His Heaven. All's Right with the World. ", "color: #ff6b00; font-size: 14px;");
-        console.log("%c 神は天にいまし 世は全て事もなし ", "color: #666; font-size: 12px;");
+        console.log("%c Order Through Unity. Strength Through Sacrifice. ", "color: #ff6b00; font-size: 14px;");
+        console.log("%c 秩序は団結から 力は犠牲から ", "color: #666; font-size: 12px;");
+
+        // ============================================
+        // EVANGELION UI ENHANCEMENTS
+        // ============================================
+
+        // Status Bar Time
+        function updateStatusTime() {
+            const now = new Date();
+            const timeStr = now.toTimeString().split(' ')[0];
+            const statusTime = document.getElementById('status-time');
+            if (statusTime) statusTime.textContent = timeStr;
+        }
+        setInterval(updateStatusTime, 1000);
+        updateStatusTime();
+
+        // Depth Gauge Animation
+        function updateDepthGauge() {
+            const depthFill = document.getElementById('depth-fill');
+            const depthValue = document.getElementById('depth-value');
+            if (depthFill && depthValue) {
+                const depth = Math.floor(Math.random() * 500) + 1100;
+                const percentage = ((2000 - depth) / 2000) * 100;
+                depthFill.style.height = percentage + '%';
+                depthValue.textContent = '-' + depth + 'm';
+            }
+        }
+        setInterval(updateDepthGauge, 5000);
+
+        // Data scroll text generator
+        function generateDataString() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            const prefixes = ['MT-', 'A0', 'B', 'SYNC-', 'GT', 'AC', 'PATTERN-'];
+            let result = '';
+            for (let i = 0; i < 20; i++) {
+                const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                let num = '';
+                for (let j = 0; j < 4; j++) {
+                    num += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                result += prefix + num + '-';
+            }
+            return result;
+        }
+
+        // Update scroll data periodically
+        setInterval(() => {
+            document.querySelectorAll('.data-scroll-content').forEach(el => {
+                el.textContent = generateDataString();
+            });
+        }, 20000);
+
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
