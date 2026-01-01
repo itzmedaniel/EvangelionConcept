@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NERV // CENTRAL DOGMA // 第壱話</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --nerv-orange: #ff6b00;
+            --nerv-red: #dc2626;
+            --nerv-red-dark: #991b1b;
+            --eva-purple: #7c3aed;
+            --eva-green: #22c55e;
+            --terminal-green: #00ff41;
+            --warning-yellow: #fbbf24;
+            --deep-black: #0a0a0a;
+            --grid-color: rgba(255, 107, 0, 0.1);
+            --lcl-orange: #ff8c42;
+            --seele-red: #8b0000;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--deep-black);
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Japanese Text */
+        .jp-text {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        /* Scanline Effect */
+        .scanlines::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.15) 2px,
+                rgba(0, 0, 0, 0.15) 4px
+            );
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* CRT Flicker */
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            5% { opacity: 0.95; }
+            10% { opacity: 0.97; }
+            15% { opacity: 0.94; }
+            20% { opacity: 0.98; }
+            100% { opacity: 0.97; }
+        }
+
+        .crt-flicker {
+            animation: flicker 0.15s infinite;
+        }
+
+        /* Hex Grid Background */
+        .hex-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(30deg, var(--grid-color) 12%, transparent 12.5%, transparent 87%, var(--grid-color) 87.5%, var(--grid-color)),
+                linear-gradient(150deg, var(--grid-color) 12%, transparent 12.5%, transparent 87%, var(--grid-color) 87.5%, var(--grid-color)),
+                linear-gradient(30deg, var(--grid-color) 12%, transparent 12.5%, transparent 87%, var(--grid-color) 87.5%, var(--grid-color)),
+                linear-gradient(150deg, var(--grid-color) 12%, transparent 12.5%, transparent 87%, var(--grid-color) 87.5%, var(--grid-color));
+            background-size: 80px 140px;
+            background-position: 0 0, 0 0, 40px 70px, 40px 70px;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        /* Warning Stripes */
+        .warning-stripes {
+            background: repeating-linear-gradient(
+                45deg,
+                var(--nerv-orange),
+                var(--nerv-orange) 10px,
+                #000 10px,
+                #000 20px
+            );
+            height: 8px;
+        }
+
+        .warning-stripes-red {
+            background: repeating-linear-gradient(
+                45deg,
+                var(--nerv-red),
+                var(--nerv-red) 10px,
+                #000 10px,
+                #000 20px
+            );
+            height: 6px;
+        }
+
+        /* NERV Logo */
+        .nerv-logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 5rem;
+            letter-spacing: 0.5em;
+            color: var(--nerv-orange);
+            text-shadow: 
+                0 0 10px var(--nerv-orange),
+                0 0 20px var(--nerv-orange),
+                0 0 40px var(--nerv-orange),
+                0 0 80px var(--nerv-orange);
+        }
+
+        /* Episode Title Style */
+        .episode-title {
+            font-family: 'Noto Sans JP', serif;
+            font-weight: 900;
+            font-size: 3rem;
+            color: #fff;
+            text-shadow: 4px 4px 0 var(--nerv-red);
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+
+        /* Glitch Effect */
+        @keyframes glitch {
+            0% { transform: translate(0); filter: hue-rotate(0deg); }
+            10% { transform: translate(-5px, 2px); filter: hue-rotate(90deg); }
+            20% { transform: translate(5px, -2px); }
+            30% { transform: translate(-3px, 1px); filter: hue-rotate(180deg); }
+            40% { transform: translate(3px, -1px); }
+            50% { transform: translate(-2px, 2px); filter: hue-rotate(270deg); }
+            60% { transform: translate(2px, -2px); }
+            70% { transform: translate(-1px, 1px); filter: hue-rotate(0deg); }
+            80% { transform: translate(1px, -1px); }
+            90% { transform: translate(0); }
+            100% { transform: translate(0); }
+        }
+
+        @keyframes glitch-skew {
+            0% { transform: skew(0deg); }
+            20% { transform: skew(2deg); }
+            40% { transform: skew(-2deg); }
+            60% { transform: skew(1deg); }
+            80% { transform: skew(-1deg); }
+            100% { transform: skew(0deg); }
+        }
+
+        .glitch {
+            position: relative;
+        }
+
+        .glitch:hover {
+            animation: glitch 0.5s infinite, glitch-skew 0.5s infinite;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+        }
+
+        .glitch:hover::before {
+            opacity: 0.8;
+            color: #ff0000;
+            animation: glitch 0.3s infinite;
+            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+            transform: translate(-3px, 0);
+        }
+
+        .glitch:hover::after {
+            opacity: 0.8;
+            color: #00ffff;
+            animation: glitch 0.3s infinite reverse;
+            clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+            transform: translate(3px, 0);
+        }
+
+        /* Terminal Text */
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: var(--terminal-green); }
+        }
+
+        .terminal-text {
+            color: var(--terminal-green);
+            font-family: 'JetBrains Mono', monospace;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 3px solid var(--terminal-green);
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+
+        /* Eva Unit Cards */
+        .eva-card {
+            background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(20,20,20,0.95) 100%);
+            border: 2px solid;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+        }
+
+        .eva-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .eva-card:hover::before {
+            left: 100%;
+        }
+
+        .eva-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            border-left: 2px solid currentColor;
+            transform: rotate(45deg) translate(14px, 14px);
+        }
+
+        .eva-01 { border-color: var(--eva-purple); color: var(--eva-purple); }
+        .eva-01:hover { box-shadow: 0 0 30px var(--eva-purple), inset 0 0 30px rgba(124, 58, 237, 0.1); }
+        
+        .eva-00 { border-color: #3b82f6; color: #3b82f6; }
+        .eva-00:hover { box-shadow: 0 0 30px #3b82f6, inset 0 0 30px rgba(59, 130, 246, 0.1); }
+        
+        .eva-02 { border-color: var(--nerv-red); color: var(--nerv-red); }
+        .eva-02:hover { box-shadow: 0 0 30px var(--nerv-red), inset 0 0 30px rgba(220, 38, 38, 0.1); }
+
+        /* Status Indicator */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 5px currentColor; }
+            50% { box-shadow: 0 0 20px currentColor, 0 0 30px currentColor; }
+        }
+
+        .status-online {
+            animation: pulse 2s infinite;
+        }
+
+        /* Navigation */
+        .nav-item {
+            position: relative;
+            padding: 0.5rem 1rem;
+            color: #888;
+            transition: all 0.3s ease;
+            clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+        }
+
+        .nav-item::before {
+            content: '//';
+            margin-right: 0.5rem;
+            color: var(--nerv-orange);
+        }
+
+        .nav-item:hover {
+            color: var(--nerv-orange);
+            background: rgba(255, 107, 0, 0.2);
+        }
+
+        /* Data Panel */
+        .data-panel {
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid var(--nerv-orange);
+            position: relative;
+        }
+
+        .data-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--nerv-orange);
+        }
+
+        .data-panel::after {
+            content: 'NERV';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 8px;
+            color: var(--nerv-orange);
+            opacity: 0.5;
+        }
+
+        /* Progress Bars */
+        .sync-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .sync-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 4px,
+                rgba(0,0,0,0.3) 4px,
+                rgba(0,0,0,0.3) 8px
+            );
+            z-index: 1;
+        }
+
+        .sync-bar-fill {
+            height: 100%;
+            transition: width 1s ease;
+            position: relative;
+        }
+
+        @keyframes sync-pulse {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        .sync-bar-fill.active {
+            animation: sync-pulse 2s infinite;
+        }
+
+        /* Alert Box */
+        @keyframes alert-flash {
+            0%, 100% { opacity: 1; border-color: var(--nerv-red); }
+            50% { opacity: 0.8; border-color: #ff0000; }
+        }
+
+        .alert-box {
+            background: rgba(220, 38, 38, 0.15);
+            border: 2px solid var(--nerv-red);
+            animation: alert-flash 0.5s infinite;
+            position: relative;
+        }
+
+        .alert-box::before {
+            content: '⚠ WARNING ⚠';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--nerv-red);
+            color: #fff;
+            padding: 2px 20px;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        /* Button Style */
+        .nerv-btn {
+            background: transparent;
+            border: 2px solid var(--nerv-orange);
+            color: var(--nerv-orange);
+            padding: 0.75rem 2rem;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+        }
+
+        .nerv-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--nerv-orange);
+            z-index: -1;
+            transition: left 0.3s ease;
+        }
+
+        .nerv-btn:hover {
+            color: #000;
+            text-shadow: none;
+        }
+
+        .nerv-btn:hover::before {
+            left: 0;
+        }
+
+        /* Section Headers */
+        .section-header {
+            font-family: 'Orbitron', sans-serif;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--nerv-orange), transparent);
+        }
+
+        .section-header::before {
+            content: '►';
+            margin-right: 15px;
+            color: var(--nerv-orange);
+            animation: pulse 1s infinite;
+        }
+
+        /* Floating Elements */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Corner Brackets */
+        .bracket-corners {
+            position: relative;
+        }
+
+        .bracket-corners::before,
+        .bracket-corners::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--nerv-orange);
+        }
+
+        .bracket-corners::before {
+            top: -5px;
+            left: -5px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .bracket-corners::after {
+            bottom: -5px;
+            right: -5px;
+            border-left: none;
+            border-top: none;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--nerv-orange);
+        }
+
+        /* AT Field Animation */
+        @keyframes at-field {
+            0% { transform: scale(1) rotate(0deg); opacity: 0.3; }
+            50% { transform: scale(1.2) rotate(180deg); opacity: 0.6; }
+            100% { transform: scale(1) rotate(360deg); opacity: 0.3; }
+        }
+
+        .at-field {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: conic-gradient(from 0deg, transparent, var(--nerv-orange), transparent, var(--nerv-orange), transparent);
+            border-radius: 50%;
+            animation: at-field 8s linear infinite;
+            opacity: 0.1;
+        }
+
+        /* Hexagon Pattern */
+        .hexagon {
+            width: 100px;
+            height: 57.74px;
+            background: var(--nerv-orange);
+            position: relative;
+            opacity: 0.1;
+        }
+
+        .hexagon::before,
+        .hexagon::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+        }
+
+        .hexagon::before {
+            bottom: 100%;
+            border-bottom: 28.87px solid var(--nerv-orange);
+        }
+
+        .hexagon::after {
+            top: 100%;
+            border-top: 28.87px solid var(--nerv-orange);
+        }
+
+        /* SEELE Monolith Style */
+        .seele-monolith {
+            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+            border: 1px solid #333;
+            position: relative;
+        }
+
+        .seele-monolith::before {
+            content: 'SOUND ONLY';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--nerv-red);
+            font-size: 12px;
+            letter-spacing: 4px;
+            opacity: 0.8;
+        }
+
+        /* Entry Plug Display */
+        .entry-plug-display {
+            background: linear-gradient(180deg, rgba(255, 140, 66, 0.1) 0%, rgba(255, 107, 0, 0.05) 100%);
+            border: 1px solid var(--lcl-orange);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .entry-plug-display::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse, rgba(255, 140, 66, 0.1) 0%, transparent 70%);
+            animation: float 4s ease-in-out infinite;
+        }
+
+        /* Countdown Timer */
+        .countdown {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            color: var(--nerv-red);
+            text-shadow: 0 0 10px var(--nerv-red);
+            letter-spacing: 0.1em;
+        }
+
+        /* Cross/Crucifix decoration */
+        .cross-deco {
+            position: relative;
+        }
+
+        .cross-deco::after {
+            content: '†';
+            position: absolute;
+            font-size: 24px;
+            color: var(--nerv-red);
+            opacity: 0.3;
+        }
+
+        /* Data Stream */
+        @keyframes data-stream {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        .data-stream {
+            position: absolute;
+            width: 1px;
+            height: 100%;
+            background: linear-gradient(180deg, transparent, var(--nerv-orange), transparent);
+            animation: data-stream 2s linear infinite;
+        }
+
+        /* Warning Text Flash */
+        @keyframes warning-flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .warning-flash {
+            animation: warning-flash 0.5s infinite;
+        }
+
+        /* Technical Readout Lines */
+        .tech-lines {
+            position: relative;
+        }
+
+        .tech-lines::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, transparent 0%, transparent 50%, rgba(255,107,0,0.03) 50%, rgba(255,107,0,0.03) 100%),
+                linear-gradient(0deg, transparent 0%, transparent 50%, rgba(255,107,0,0.03) 50%, rgba(255,107,0,0.03) 100%);
+            background-size: 4px 4px;
+            pointer-events: none;
+        }
+
+        /* Geometric Frame */
+        .geo-frame {
+            position: relative;
+            border: 1px solid var(--nerv-orange);
+        }
+
+        .geo-frame::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border: 1px solid rgba(255, 107, 0, 0.3);
+            pointer-events: none;
+        }
+
+        /* Rotating Triangle */
+        @keyframes rotate-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .rotating-element {
+            animation: rotate-slow 20s linear infinite;
+        }
+    </style>
+</head>
+<body class="scanlines crt-flicker">
+    <div class="hex-grid"></div>
+    
+    <!-- Data Streams Background -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div class="data-stream" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="data-stream" style="left: 25%; animation-delay: 0.5s;"></div>
+        <div class="data-stream" style="left: 40%; animation-delay: 1s;"></div>
+        <div class="data-stream" style="left: 60%; animation-delay: 1.5s;"></div>
+        <div class="data-stream" style="left: 75%; animation-delay: 2s;"></div>
+        <div class="data-stream" style="left: 90%; animation-delay: 0.3s;"></div>
+    </div>
+    
+    <!-- Top System Bar -->
+    <div class="bg-black border-b border-orange-500/50 py-1 px-4 flex justify-between items-center text-xs">
+        <div class="flex items-center gap-6">
+            <span class="text-orange-500">NERV_HQ_TOKYO-3</span>
+            <span class="text-gray-600">|</span>
+            <span class="text-gray-500">MAGI.SYS" <span class="text-green-500">ONLINE</span></span>
+            <span class="text-gray-600">|</span>
+            <span class="text-gray-500">AT_FIELD: <span class="text-green-500">NOMINAL</span></span>
+        </div>
+        <div class="flex items-center gap-6">
+            <span class="text-red-500 warning-flash">● REC</span>
+            <span class="text-gray-500">DOCUMENT: <span class="text-orange-500">CLASSIFIED</span></span>
+            <span class="text-gray-500 jp-text">第三新東京市</span>
+        </div>
+    </div>
+    
+    <!-- Warning Header -->
+    <div class="warning-stripes"></div>
+    
+    <!-- Navigation -->
+    <nav class="bg-black/95 backdrop-blur-sm border-b border-orange-500/30 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 border-2 border-orange-500 flex items-center justify-center rotating-element">
+                            <div class="w-4 h-4 bg-orange-500"></div>
+                        </div>
+                        <span class="text-orange-500 font-bold tracking-widest" style="font-family: 'Bebas Neue';">NERV</span>
+                    </div>
+                    <div class="text-xs text-orange-500 font-mono flex items-center gap-2">
+                        <span class="w-2 h-2 bg-red-500 rounded-full status-online"></span>
+                        <span>MAGI_SYSTEM</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1">
+                    <a href="#home" class="nav-item text-xs cursor-pointer">HOME</a>
+                    <a href="#evangelions" class="nav-item text-xs cursor-pointer">EVANGELIONS</a>
+                    <a href="#pilots" class="nav-item text-xs cursor-pointer">PILOTS</a>
+                    <a href="#operations" class="nav-item text-xs cursor-pointer">OPERATIONS</a>
+                    <a href="#terminal" class="nav-item text-xs cursor-pointer">TERMINAL</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-xs font-mono text-gray-500">
+                        <span class="text-orange-500">SYS_TIME:</span> <span id="clock">00:00:00</span>
+                    </div>
+                    <div class="text-xs font-mono text-gray-500">
+                        <span class="text-orange-500">DATE:</span> <span id="date">0000.00.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden tech-lines">
+        <div class="at-field" style="top: 5%; left: 5%;"></div>
+        <div class="at-field" style="bottom: 5%; right: 5%;"></div>
+        <div class="at-field" style="top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+        
+        <!-- Side Decorations -->
+        <div class="absolute left-8 top-1/2 transform -translate-y-1/2 hidden lg:block">
+            <div class="episode-title jp-text text-6xl opacity-20">使徒、襲来</div>
+        </div>
+        
+        <div class="absolute right-8 top-1/4 hidden lg:block text-right">
+            <div class="text-xs text-orange-500/50 font-mono space-y-1">
+                <p>PRIORITY: <span class="text-red-500">ALPHA</span></p>
+                <p>CLEARANCE: LEVEL-5</p>
+                <p>STATUS: ACTIVE</p>
+                <p class="text-orange-500">─────────</p>
+                <p>GEO_FRONT: SECURE</p>
+                <p>LILITH: CONTAINED</p>
+            </div>
+        </div>
+        
+        <div class="text-center z-10 px-4">
+            <!-- NERV Emblem -->
+            <div class="mb-8 relative">
+                <div class="w-32 h-32 mx-auto mb-6 relative">
+                    <div class="absolute inset-0 border-4 border-orange-500 rounded-full rotating-element opacity-30"></div>
+                    <div class="absolute inset-2 border-2 border-orange-500/50 rounded-full"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <svg viewBox="0 0 100 100" class="w-20 h-20 text-orange-500">
+                            <polygon points="50,10 90,90 10,90" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="50" cy="50" r="15" fill="none" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <p class="text-orange-500 text-xs tracking-[0.5em] mb-4 font-mono">SPECIAL AGENCY</p>
+                <h1 class="nerv-logo glitch" data-text="NERV">NERV</h1>
+                <div class="mt-4 space-y-1">
+                    <p class="text-gray-400 text-lg tracking-[0.3em] jp-text">神の王座、人の再生のために</p>
+                    <p class="text-orange-500/70 text-sm tracking-wider">GOD'S IN HIS HEAVEN. ALL'S RIGHT WITH THE WORLD.</p>
+                </div>
+            </div>
+            
+            <div class="terminal-text text-left max-w-2xl mx-auto mb-8 text-sm px-4">
+                > INITIALIZING CENTRAL DOGMA SYSTEMS... MAGI CONSENSUS ACHIEVED
+            </div>
+
+            <!-- Operation Timer -->
+            <div class="mb-12">
+                <p class="text-xs text-gray-500 mb-2">OPERATION TIME REMAINING</p>
+                <div class="countdown" id="countdown">05:00:00</div>
+                <div class="w-64 mx-auto mt-2">
+                    <div class="sync-bar">
+                        <div class="sync-bar-fill bg-gradient-to-r from-orange-500 to-red-500 active" style="width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-4 justify-center flex-wrap mb-16">
+                <button class="nerv-btn">
+                    <span class="relative z-10">ACCESS DATABASE</span>
+                </button>
+                <button class="nerv-btn" style="border-color: #dc2626; color: #dc2626;">
+                    <span class="relative z-10">EMERGENCY PROTOCOL</span>
+                </button>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                <div class="geo-frame p-4 bg-black/80">
+                    <p class="text-4xl font-bold text-orange-500" style="font-family: 'Orbitron';">03</p>
+                    <p class="text-xs text-gray-500 mt-1">ACTIVE UNITS</p>
+                    <div class="warning-stripes-red mt-2"></div>
+                </div>
+                <div class="geo-frame p-4 bg-black/80">
+                    <p class="text-4xl font-bold text-green-500" style="font-family: 'Orbitron';">17</p>
+                    <p class="text-xs text-gray-500 mt-1">ANGELS NEUTRALIZED</p>
+                    <div class="warning-stripes-red mt-2"></div>
+                </div>
+                <div class="geo-frame p-4 bg-black/80">
+                    <p class="text-4xl font-bold text-purple-500" style="font-family: 'Orbitron';">400%</p>
+                    <p class="text-xs text-gray-500 mt-1">MAX SYNC RATE</p>
+                    <div class="warning-stripes-red mt-2"></div>
+                </div>
+                <div class="geo-frame p-4 bg-black/80">
+                    <p class="text-4xl font-bold text-red-500" style="font-family: 'Orbitron';">∞</p>
+                    <p class="text-xs text-gray-500 mt-1">HUMAN POTENTIAL</p>
+                    <div class="warning-stripes-red mt-2"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 floating">
+            <div class="flex flex-col items-center gap-2">
+                <span class="text-xs text-orange-500/50">SCROLL</span>
+                <div class="w-6 h-10 border-2 border-orange-500 rounded-full flex justify-center">
+                    <div class="w-1 h-3 bg-orange-500 rounded-full mt-2 animate-bounce"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Alert Banner -->
+    <div class="alert-box py-6 px-6 mt-8 mx-4 relative">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-6">
+                <div class="text-6xl text-red-500 warning-flash">⚠</div>
+                <div>
+                    <p class="text-red-500 font-bold text-lg tracking-widest">PATTERN BLUE DETECTED</p>
+                    <p class="text-gray-400 text-sm mt-1">血液パターン青 // Angel signature identified in sector 7-G</p>
+                    <p class="text-xs text-gray-500 mt-2">TIMESTAMP: <span id="alert-time">00:00:00</span> | THREAT LEVEL: <span class="text-red-500">CRITICAL</span></p>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-xs text-gray-500 mb-2">MAGI RECOMMENDATION</p>
+                <div class="flex gap-2">
+                    <span class="px-3 py-1 bg-red-500/20 text-red-500 text-xs border border-red-500">ENGAGE</span>
+                    <span class="px-3 py-1 bg-red-500/20 text-red-500 text-xs border border-red-500">ENGAGE</span>
+                    <span class="px-3 py-1 bg-yellow-500/20 text-yellow-500 text-xs border border-yellow-500">ANALYZE</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Eva Units Section -->
+    <section id="evangelions" class="py-24 px-4 relative">
+        <!-- Section Japanese Title -->
+        <div class="absolute -left-4 top-32 hidden lg:block">
+            <div class="text-8xl jp-text font-black text-orange-500/5 transform -rotate-90 origin-left">エヴァンゲリオン</div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <p class="text-orange-500 text-xs tracking-[0.5em] mb-2">汎用人型決戦兵器</p>
+                <h2 class="section-header text-4xl font-bold" style="font-family: 'Orbitron';">EVANGELION UNITS</h2>
+                <p class="text-gray-500 text-xs mt-6">MULTIPURPOSE HUMANOID DECISIVE WEAPON</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- EVA-00 -->
+                <div class="eva-card eva-00 p-6">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-transparent"></div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-blue-500 text-xs font-bold tracking-widest">PROTOTYPE</span>
+                        <span class="text-green-500 text-xs status-online flex items-center gap-1">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span> ACTIVE
+                        </span>
+                    </div>
+                    <div class="flex items-baseline gap-2 mb-2">
+                        <span class="text-xs text-gray-500">UNIT</span>
+                        <h3 class="text-4xl font-black" style="font-family: 'Orbitron'; color: #3b82f6;">00</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4 border-l-2 border-blue-500/30 pl-3">First successful Evangelion unit. Redesigned after initial activation incident. Soul origin: <span class="text-blue-400">CLASSIFIED</span></p>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-500">SYNC RATE</span>
+                                <span class="text-blue-500 font-bold">68.7%</span>
+                            </div>
+                            <div class="sync-bar">
+                                <div class="sync-bar-fill bg-blue-500 active" style="width: 68.7%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-500">ARMOR INTEGRITY</span>
+                                <span class="text-blue-500 font-bold">94%</span>
+                            </div>
+                            <div class="sync-bar">
+                                <div class="sync-bar-fill bg-blue-500" style="width: 94%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-500">AT FIELD STRENGTH</span>
+                                <span class="text-blue-500 font-bold">72%</span>
+                            </div>
+                            <div class="sync-bar">
+                                <div class="sync-bar-fill bg-blue-500" style="width: 72%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-gray-800">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-xs text-gray-500">DESIGNATED PILOT</p>
+                                <p class="text-blue-400 font-bold">綾波 レイ</p>
+                                <p class="text-xs text-gray-500">REI AYANAMI</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs text-gray-500">CHILD</p>
+                                <p class="text-2xl font-bold text-blue-500" style="font-family: 'Orbitron';">1st</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EVA-01 -->
+                <div class="eva-card eva-01 p-6 transform md:scale-105 relative">
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-500 px-4 py-1 text-xs font-bold text-black">
+                        PRIMARY UNIT
+                    </div>
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-transparent"></div>
+                    <div class="flex items-center justify-between mb-4 mt-2">
+                        <span class="text-purple-500 text-xs font-bold tracking-widest">TEST TYPE</span>
+                        <span class="text-green-500 text-xs status-online flex items-center gap-1">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span> ACTIVE
+                        </span>
+                    </div>
+                    <div class="flex items-baseline gap-2 mb-2">
+                        <span class="text-xs text-gray-500">UNIT</span>
+                        <h3 class="text-4xl font-black" style="font-family: 'Orbitron'; color: #7c3aed;">01</h3>
+                        <span class="text-xs text-purple-500/50 ml-2">初号機</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4 border-l-2 border-purple-500/30 pl-3">Contains the soul of <span class="text-purple-400">Yui Ikari</span>. Only unit to achieve true berserk mode. Possesses <span class="text-green-400">S² Engine</span>.</p>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-500">SYNC RATE</span>
+                                <span class="text-purple-500 font-bold">94.2%</span>
+                            </div>
+                            <div class="sync-bar">
+                                <div class="sync-bar-fill bg-purple-500 active" style="width: 94.2%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-500">ARMOR INTEGRITY</span>
+                                <span class="text-purple-500 font-bold">87%</span>
+                            </div>
+                            <div class="sync-bar">
+                                <div class="sync-bar-fill bg-purple-500" style="width: 87%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-500">S² ENGINE</span>
+                                <span class="text-green-500 font-bold">INTEGRATED</span>
+                            </div>
+                            <div class="sync-bar">
+                                <div class="sync-bar-fill bg-gradient-to-r from-green-500 to-green-300 active" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-500">BERSERK POTENTIAL</span>
+                                <span class="text-red-500 font-bold warning-flash">EXTREME</span>
+                            </div>
+                            <div class="sync-bar">
+                                <div class="sync-bar-fill bg-gradient-to-r from-red-500 to-orange-500 active" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-gray-800">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-xs text-gray-500">DESIGNATED PILOT</p>
+                                <p class="text-purple-400 font-bold">碇 シンジ</p>
+                                <p class="text-xs text-gray-500">SHINJI IKARI</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs text-gray-500">CHILD</p>
+                                <p class="text-2xl font-bold text-purple-500" style="font-family: 'Orbitron';">3rd</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EVA-02 -->
+                <div class="eva-card eva-02 p-6">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-transparent"></div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-red-500 text-xs font-bold tracking-widest">PRODUCTION MODEL</span>
+                        <span class="text-green-500 text-xs status-online flex items-center gap-1">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span> ACTIVE
+                        </span>
+                    </div>
+                    <div class="flex items-baseline gap-2 mb-2">
+                        <span class="text-xs text-gray-500">UNIT</span>
+                        <h3 class="text-4xl font-black" style="font-family: 'Orbitron'; color: #dc2626;">02</h3>
+                        <span class="text-xs text-red-500/50 ml-2">弐号機</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4 border-l-2 border-red-500/30 pl-3">First production model. Optimized for direct combat operations. Built in <span class="text-red-400">Germany</span>.</p>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-500">SYNC RATE</span>
+                                <span class="text-red-500 font-bold">78.9%</span>
+                            </div>
+                            <div class="sync-bar">
+                                <div class="sync-bar-fill bg-red-500 active" style="width: 78.9%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-500">ARMOR INTEGRITY</span>
+                                <span class="text-red-500 font-bold">91%</span>
+                            </div>
+                            <div class="sync-bar">
+                                <div class="sync-bar-fill bg-red-500" style="width: 91%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-500">COMBAT EFFICIENCY</span>
+                                <span class="text-red-500 font-bold">96%</span>
+                            </div>
+                            <div class="sync-bar">
+                                <div class="sync-bar-fill bg-red-500" style="width: 96%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-gray-800">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-xs text-gray-500">DESIGNATED PILOT</p>
+                                <p class="text-red-400 font-bold">惣流・アスカ・ラングレー</p>
+                                <p class="text-xs text-gray-500">ASUKA LANGLEY SORYU</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs text-gray-500">CHILD</p>
+                                <p class="text-2xl font-bold text-red-500" style="font-family: 'Orbitron';">2nd</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Additional Unit Info -->
+            <div class="mt-12 grid md:grid-cols-2 gap-6">
+                <div class="entry-plug-display p-6">
+                    <h4 class="text-orange-500 font-bold mb-4 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-orange-500 rounded-full status-online"></span>
+                        ENTRY PLUG STATUS
+                    </h4>
+                    <div class="grid grid-cols-3 gap-4 text-xs">
+                        <div class="text-center">
+                            <p class="text-gray-500">UNIT-00</p>
+                            <p class="text-blue-500 font-bold text-lg">STANDBY</p>
+                            <p class="text-gray-600">LCL: 100%</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-500">UNIT-01</p>
+                            <p class="text-purple-500 font-bold text-lg">INSERTED</p>
+                            <p class="text-gray-600">LCL: 100%</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-500">UNIT-02</p>
+                            <p class="text-red-500 font-bold text-lg">STANDBY</p>
+                            <p class="text-gray-600">LCL: 100%</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="entry-plug-display p-6">
+                    <h4 class="text-orange-500 font-bold mb-4 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-orange-500 rounded-full status-online"></span>
+                        UMBILICAL CABLE STATUS
+                    </h4>
+                    <div class="grid grid-cols-3 gap-4 text-xs">
+                        <div class="text-center">
+                            <p class="text-gray-500">UNIT-00</p>
+                            <p class="text-green-500 font-bold text-lg">CONNECTED</p>
+                            <p class="text-gray-600">PWR: 100%</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-500">UNIT-01</p>
+                            <p class="text-yellow-500 font-bold text-lg">INTERNAL</p>
+                            <p class="text-gray-600">S²: ACTIVE</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-500">UNIT-02</p>
+                            <p class="text-green-500 font-bold text-lg">CONNECTED</p>
+                            <p class="text-gray-600">PWR: 100%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pilots Section -->
+    <section id="pilots" class="py-24 px-4 bg-black/50 relative overflow-hidden">
+        <!-- Background Text -->
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+            <div class="text-[20rem] font-black text-orange-500/5 jp-text whitespace-nowrap">チルドレン</div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="text-center mb-16">
+                <p class="text-orange-500 text-xs tracking-[0.5em] mb-2">適格者 // QUALIFIED PERSONS</p>
+                <h2 class="section-header text-4xl font-bold" style="font-family: 'Orbitron';">EVA PILOTS</h2>
+                <p class="text-gray-500 text-xs mt-6">THE CHILDREN - DESIGNATED PILOTS OF EVANGELION UNITS</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Rei -->
+                <div class="data-panel p-6 relative group">
+                    <div class="absolute top-2 right-2 text-xs text-gray-600">NERV//PILOT_DATA</div>
+                    <div class="bracket-corners p-6">
+                        <div class="w-24 h-24 mx-auto mb-4 relative">
+                            <div class="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-900/20 border-2 border-blue-500"></div>
+                            <div class="absolute inset-0 rounded-full flex items-center justify-center">
+                                <span class="text-4xl font-black text-blue-500" style="font-family: 'Orbitron';">I</span>
+                            </div>
+                            <div class="absolute -inset-2 rounded-full border border-blue-500/30 rotating-element"></div>
+                        </div>
+                        <h3 class="text-xl font-bold text-center text-blue-400" style="font-family: 'Orbitron';">REI AYANAMI</h3>
+                        <p class="text-center text-2xl jp-text text-blue-500/50 mt-1">綾波 レイ</p>
+                        <p class="text-center text-gray-500 text-xs mt-2 tracking-widest">FIRST CHILD</p>
+                    </div>
+                    <div class="mt-6 space-y-3 text-xs">
+                        <div class="flex justify-between border-b border-gray-800 pb-2">
+                            <span class="text-gray-500">DESIGNATION</span>
+                            <span class="text-blue-400">FIRST CHILD</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800 pb-2">
+                            <span class="text-gray-500">ASSIGNED UNIT</span>
+                            <span class="text-blue-400">EVA-00 PROTOTYPE</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800 pb-2">
+                            <span class="text-gray-500">STATUS</span>
+                            <span class="text-green-500">COMBAT READY</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800 pb-2">
+                            <span class="text-gray-500">BLOOD TYPE</span>
+                            <span class="text-orange-500 warning-flash">CLASSIFIED</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800 pb-2">
+                            <span class="text-gray-500">SYNC RATE</span>
+                            <span class="text-blue-400">68.7%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">GUARDIAN</span>
+                            <span class="text-gray-400">GENDO IKARI</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-800">
+                        <p class="text-xs text-gray-600 italic">"I am me. Nothing more, nothing less."</p>
+                    </div>
+                </div>
+
+                <!-- Shinji -->
+                <div class="data-panel p-6 relative group transform md:scale-105" style="border-color: #7c3aed;">
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-500 px-4 py-1 text-xs font-bold text-black tracking-widest">
+                        PRIMARY PILOT
+                    </div>
+                    <div class="absolute top-2 right-2 text-xs text-gray-600">NERV//PILOT_DATA</div>
+                    <div class="bracket-corners p-6" style="--nerv-orange: #7c3aed;">
+                        <div class="w-24 h-24 mx-auto mb-4 relative">
+                            <div class="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/20 to-purple-900/20 border-2 border-purple-500"></div>
+                            <div class="absolute inset-0 rounded-full flex items-center justify-center">
+                                <span class="text-4xl font-black text-purple-500" style="font-family: 'Orbitron';">III</span>
+                            </div>
+                            <div class="absolute -inset-2 rounded-full border border-purple-500/30 rotating-element"></div>
+                        </div>
+                        <h3 class="text-xl font-bold text-center text-purple-400" style="font-family: 'Orbitron';">SHINJI IKARI</h3>
+                        <p class="text-center text-2xl jp-text text-purple-500/50 mt-1">碇 シンジ</p>
+                        <p class="text-center text-gray-500 text-xs mt-2 tracking-widest">THIRD CHILD</p>
+                    </div>
+                    <div class="mt-6 space-y-3 text-xs">
+                        <div class="flex justify-between border-b border-gray-800 pb-2">
+                            <span class="text-gray-500">DESIGNATION</span>
+                            <span class="text-purple-400">THIRD CHILD</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800 pb-2">
+                            <span class="text-gray-500">ASSIGNED UNIT</span>
+                            <span class="text-purple-400">EVA-01 TEST TYPE</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800 pb-2">
+                            <span class="text-gray-500">STATUS</span>
+                            <span class="text-green-500">COMBAT READY</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800 pb-2">
+                            <span class="text-gray-500">BLOOD TYPE</span>
+                            <span class="text-gray-400">A</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800 pb-2">
+                            <span class="text-gray-500">SYNC RATE</span>
+                            <span class="text-purple-400">94.2%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">GUARDIAN</span>
+                            <span class="text-gray-400">MISATO KATSURAGI</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-800">
+                        <p class="text-xs text-gray-600 italic">"I mustn't run away..."</p>
+                    </div>
+                </div>
+
+                <!-- Asuka -->
+                <div class="data-panel p-6 relative group" style="border-color: #dc2626;">
+                    <div class="absolute top-2 right-2 text-xs text-gray-600">NERV//PILOT_DATA</div>
+                    <div class="bracket-corners p-6" style="--nerv-orange: #dc2626;">
+                        <div class="w-24 h-24 mx-auto mb-4 relative">
+                            <div class="absolute inset-0 rounded-full bg-gradient-to-br from-red-500/20 to-red-900/20 border-2 border-red-500"></div>
+                            <div class="absolute inset-0 rounded-full flex items-center justify-center">
+                                <span class="text-4xl font-black text-red-500" style="font-family: 'Orbitron';">II</span>
+                            </div>
+                            <div class="absolute -inset-2 rounded-full border border-red-500/30 rotating-element"></div>
+                        </div>
+                        <h3 class="text-xl font-bold text-center text-red-400" style="font-family: 'Orbitron';">ASUKA LANGLEY</h3>
+                        <p class="text-center text-lg jp-text text-red-500/50 mt-1">惣流・アスカ・ラングレー</p>
+                        <p class="text-center text-gray-500 text-xs mt-2 tracking-widest">SECOND CHILD</p>
+                    </div>
+                    <div class="mt-6 space-y-3 text-xs">
+                        <div class="flex justify-between border-b border-gray-800 pb-2">
+                            <span class="text-gray-500">DESIGNATION</span>
+                            <span class="text-red-400">SECOND CHILD</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800 pb-2">
+                            <span class="text-gray-500">ASSIGNED UNIT</span>
+                            <span class="text-red-400">EVA-02 PRODUCTION</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800 pb-2">
+                            <span class="text-gray-500">STATUS</span>
+                            <span class="text-green-500">COMBAT READY</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800 pb-2">
+                            <span class="text-gray-500">BLOOD TYPE</span>
+                            <span class="text-gray-400">A</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800 pb-2">
+                            <span class="text-gray-500">SYNC RATE</span>
+                            <span class="text-red-400">78.9%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">GUARDIAN</span>
+                            <span class="text-gray-400">MISATO KATSURAGI</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-800">
+                        <p class="text-xs text-gray-600 italic">"What are you, stupid?!"</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SEELE Communication Panels -->
+            <div class="mt-16">
+                <h3 class="text-center text-orange-500 text-sm tracking-widest mb-8">SEELE // 人類補完委員会 // COMMUNICATION LINK</h3>
+                <div class="grid grid-cols-3 md:grid-cols-6 gap-4">
+                    <div class="seele-monolith aspect-[3/4] flex items-center justify-center">
+                        <span class="text-4xl font-black text-red-900/50" style="font-family: 'Orbitron';">01</span>
+                    </div>
+                    <div class="seele-monolith aspect-[3/4] flex items-center justify-center">
+                        <span class="text-4xl font-black text-red-900/50" style="font-family: 'Orbitron';">02</span>
+                    </div>
+                    <div class="seele-monolith aspect-[3/4] flex items-center justify-center">
+                        <span class="text-4xl font-black text-red-900/50" style="font-family: 'Orbitron';">03</span>
+                    </div>
+                    <div class="seele-monolith aspect-[3/4] flex items-center justify-center">
+                        <span class="text-4xl font-black text-red-900/50" style="font-family: 'Orbitron';">04</span>
+                    </div>
+                    <div class="seele-monolith aspect-[3/4] flex items-center justify-center">
+                        <span class="text-4xl font-black text-red-900/50" style="font-family: 'Orbitron';">05</span>
+                    </div>
+                    <div class="seele-monolith aspect-[3/4] flex items-center justify-center relative">
+                        <span class="text-red-500 text-xs absolute">SOUND ONLY</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAGI System Section -->
+    <section id="operations" class="py-24 px-4 relative">
+        <div class="absolute inset-0 pointer-events-none overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-orange-500/5 to-transparent"></div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="text-center mb-16">
+                <p class="text-orange-500 text-xs tracking-[0.5em] mb-2">三賢者システム // SUPERCOMPUTER TRIAD</p>
+                <h2 class="section-header text-4xl font-bold" style="font-family: 'Orbitron';">MAGI SYSTEM</h2>
+                <p class="text-gray-500 text-xs mt-6">MAGUS ARTIFICIAL GUIDANCE INTERFACE</p>
+            </div>
+
+            <!-- MAGI Visualization -->
+            <div class="relative mb-16">
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div class="w-64 h-64 border border-orange-500/20 rounded-full"></div>
+                    <div class="absolute w-48 h-48 border border-orange-500/30 rounded-full rotating-element"></div>
+                    <div class="absolute w-32 h-32 border border-orange-500/40 rounded-full" style="animation: rotate-slow 15s linear infinite reverse;"></div>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-6 relative z-10">
+                    <div class="bg-black/90 border-2 border-orange-500 p-8 text-center relative group hover:bg-orange-500/10 transition-all">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-orange-500"></div>
+                        <div class="absolute top-2 left-2 text-xs text-orange-500/50">MAGI_01</div>
+                        <div class="text-8xl mb-4 font-black text-orange-500" style="font-family: 'Bebas Neue'; text-shadow: 0 0 30px rgba(255,107,0,0.5);">M</div>
+                        <h3 class="text-2xl font-bold text-orange-500 tracking-widest">MELCHIOR</h3>
+                        <p class="text-gray-500 text-sm mt-2">Dr. Akagi as <span class="text-orange-400">Scientist</span></p>
+                        <p class="text-xs text-gray-600 mt-2 jp-text">科学者として</p>
+                        <div class="mt-6 space-y-2">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-gray-500">LOGIC CORE</span>
+                                <span class="text-green-500">ONLINE</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-gray-500">SYNC STATUS</span>
+                                <span class="text-green-500">100%</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-800">
+                            <span class="px-4 py-2 bg-green-500/20 text-green-500 text-sm border border-green-500">APPROVE</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-black/90 border-2 border-orange-500 p-8 text-center relative group hover:bg-orange-500/10 transition-all">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-orange-500"></div>
+                        <div class="absolute top-2 left-2 text-xs text-orange-500/50">MAGI_02</div>
+                        <div class="text-8xl mb-4 font-black text-orange-500" style="font-family: 'Bebas Neue'; text-shadow: 0 0 30px rgba(255,107,0,0.5);">B</div>
+                        <h3 class="text-2xl font-bold text-orange-500 tracking-widest">BALTHASAR</h3>
+                        <p class="text-gray-500 text-sm mt-2">Dr. Akagi as <span class="text-orange-400">Mother</span></p>
+                        <p class="text-xs text-gray-600 mt-2 jp-text">母親として</p>
+                        <div class="mt-6 space-y-2">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-gray-500">EMOTION CORE</span>
+                                <span class="text-green-500">ONLINE</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-gray-500">SYNC STATUS</span>
+                                <span class="text-green-500">100%</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-800">
+                            <span class="px-4 py-2 bg-green-500/20 text-green-500 text-sm border border-green-500">APPROVE</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-black/90 border-2 border-orange-500 p-8 text-center relative group hover:bg-orange-500/10 transition-all">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-orange-500"></div>
+                        <div class="absolute top-2 left-2 text-xs text-orange-500/50">MAGI_03</div>
+                        <div class="text-8xl mb-4 font-black text-orange-500" style="font-family: 'Bebas Neue'; text-shadow: 0 0 30px rgba(255,107,0,0.5);">C</div>
+                        <h3 class="text-2xl font-bold text-orange-500 tracking-widest">CASPER</h3>
+                        <p class="text-gray-500 text-sm mt-2">Dr. Akagi as <span class="text-orange-400">Woman</span></p>
+                        <p class="text-xs text-gray-600 mt-2 jp-text">女として</p>
+                        <div class="mt-6 space-y-2">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-gray-500">INTUITION CORE</span>
+                                <span class="text-green-500">ONLINE</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-gray-500">SYNC STATUS</span>
+                                <span class="text-yellow-500">98.7%</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-800">
+                            <span class="px-4 py-2 bg-yellow-500/20 text-yellow-500 text-sm border border-yellow-500">ANALYZING</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Status Dashboard -->
+            <div class="data-panel p-8 relative">
+                <div class="absolute top-4 right-4 flex items-center gap-2">
+                    <span class="w-2 h-2 bg-green-500 rounded-full status-online"></span>
+                    <span class="text-xs text-green-500">ALL SYSTEMS NOMINAL</span>
+                </div>
+                
+                <h4 class="text-orange-500 font-bold mb-6 text-lg tracking-widest">CENTRAL DOGMA // SYSTEM STATUS</h4>
+                
+                <div class="grid md:grid-cols-4 gap-6">
+                    <div class="bg-black/70 border border-orange-500/30 p-6 relative">
+                        <div class="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full status-online"></div>
+                        <p class="text-gray-500 text-xs mb-2">CPU LOAD</p>
+                        <p class="text-4xl font-black text-orange-500" style="font-family: 'Orbitron';" id="cpu-load">47%</p>
+                        <div class="sync-bar mt-2">
+                            <div class="sync-bar-fill bg-orange-500" style="width: 47%;"></div>
+                        </div>
+                    </div>
+                    <div class="bg-black/70 border border-orange-500/30 p-6 relative">
+                        <div class="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full status-online"></div>
+                        <p class="text-gray-500 text-xs mb-2">MEMORY USAGE</p>
+                        <p class="text-4xl font-black text-orange-500" style="font-family: 'Orbitron';" id="memory-usage">62%</p>
+                        <div class="sync-bar mt-2">
+                            <div class="sync-bar-fill bg-orange-500" style="width: 62%;"></div>
+                        </div>
+                    </div>
+                    <div class="bg-black/70 border border-orange-500/30 p-6 relative">
+                        <div class="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full status-online"></div>
+                        <p class="text-gray-500 text-xs mb-2">AT FIELD STATUS</p>
+                        <p class="text-4xl font-black text-green-500" style="font-family: 'Orbitron';">STABLE</p>
+                        <p class="text-xs text-gray-600 mt-2">絶対領域 // ABSOLUTE TERRITORY</p>
+                    </div>
+                    <div class="bg-black/70 border border-red-500/30 p-6 relative">
+                        <div class="absolute top-2 right-2 w-2 h-2 bg-yellow-500 rounded-full warning-flash"></div>
+                        <p class="text-gray-500 text-xs mb-2">THREAT LEVEL</p>
+                        <p class="text-4xl font-black text-yellow-500" style="font-family: 'Orbitron';">ELEVATED</p>
+                        <p class="text-xs text-gray-600 mt-2">PATTERN BLUE DETECTED</p>
+                    </div>
+                </div>
+                
+                <!-- Additional Readouts -->
+                <div class="grid md:grid-cols-6 gap-4 mt-6 text-xs">
+                    <div class="bg-black/50 p-3 border-l-2 border-green-500">
+                        <p class="text-gray-500">GEOFRONT</p>
+                        <p class="text-green-500 font-bold">SECURE</p>
+                    </div>
+                    <div class="bg-black/50 p-3 border-l-2 border-green-500">
+                        <p class="text-gray-500">TERMINAL DOGMA</p>
+                        <p class="text-green-500 font-bold">SEALED</p>
+                    </div>
+                    <div class="bg-black/50 p-3 border-l-2 border-green-500">
+                        <p class="text-gray-500">POWER GRID</p>
+                        <p class="text-green-500 font-bold">100%</p>
+                    </div>
+                    <div class="bg-black/50 p-3 border-l-2 border-green-500">
+                        <p class="text-gray-500">EVA CAGES</p>
+                        <p class="text-green-500 font-bold">STANDBY</p>
+                    </div>
+                    <div class="bg-black/50 p-3 border-l-2 border-yellow-500">
+                        <p class="text-gray-500">DEFCON</p>
+                        <p class="text-yellow-500 font-bold">LEVEL 2</p>
+                    </div>
+                    <div class="bg-black/50 p-3 border-l-2 border-orange-500">
+                        <p class="text-gray-500">MAGI CONSENSUS</p>
+                        <p class="text-orange-500 font-bold">2/3</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Terminal Section -->
+    <section id="terminal" class="py-24 px-4 bg-black relative">
+        <div class="absolute inset-0 pointer-events-none">
+            <div class="data-stream" style="left: 5%; opacity: 0.3;"></div>
+            <div class="data-stream" style="left: 95%; opacity: 0.3; animation-delay: 1s;"></div>
+        </div>
+        
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="text-center mb-8">
+                <p class="text-orange-500 text-xs tracking-[0.5em] mb-2">指令端末 // COMMAND INTERFACE</p>
+                <h2 class="section-header text-4xl font-bold" style="font-family: 'Orbitron';">NERV TERMINAL</h2>
+            </div>
+
+            <div class="bg-black border-2 border-green-500/50 rounded-lg overflow-hidden relative">
+                <div class="absolute inset-0 pointer-events-none bg-gradient-to-b from-green-500/5 to-transparent"></div>
+                
+                <div class="bg-green-500/10 px-4 py-2 flex items-center justify-between border-b border-green-500/30">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        <span class="text-green-500 text-xs ml-4 font-mono">MAGI_TERMINAL_v2.0.15</span>
+                    </div>
+                    <div class="text-xs text-green-500/50">
+                        <span>ROOT@NERV_HQ:</span>
+                        <span class="text-green-500">~/central_dogma</span>
+                    </div>
+                </div>
+                
+                <div class="p-6 font-mono text-sm h-96 overflow-y-auto relative" id="terminal-output">
+                    <p class="text-green-500">╔══════════════════════════════════════════════════════════════╗</p>
+                    <p class="text-green-500">║         NERV CENTRAL DOGMA - MAIN TERMINAL                   ║</p>
+                    <p class="text-green-500">║              特務機関ネルフ 中央作戦司令室                      ║</p>
+                    <p class="text-green-500">╚══════════════════════════════════════════════════════════════╝</p>
+                    <p class="text-gray-500 mt-4">[SYSTEM] Initializing MAGI connection...</p>
+                    <p class="text-gray-500">[SYSTEM] Authentication verified: LEVEL-5 ACCESS GRANTED</p>
+                    <p class="text-gray-500">[SYSTEM] Loading command modules...</p>
+                    <p class="text-gray-500">[SYSTEM] Establishing sync with MELCHIOR, BALTHASAR, CASPER...</p>
+                    <p class="text-green-500 mt-2">> MAGI CONSENSUS: 3/3 - SYSTEM READY</p>
+                    <p class="text-green-500">> 全システム正常稼働中</p>
+                    <p class="text-gray-500 mt-4">[LOG] Last angel contact: 72 hours ago</p>
+                    <p class="text-gray-500">[LOG] Current defense status: ACTIVE</p>
+                    <p class="text-gray-500">[LOG] Evangelion units: 3 OPERATIONAL</p>
+                    <p class="text-yellow-500 mt-2">[WARNING] Pattern Blue sensors on standby</p>
+                    <p class="text-yellow-500">[WARNING] 血液パターン青検出準備完了</p>
+                    <p class="text-gray-500 mt-4">[INFO] Type 'help' for available commands</p>
+                </div>
+                
+                <div class="border-t border-green-500/30 p-4 flex items-center gap-2 bg-black/50">
+                    <span class="text-green-500">NERV://</span>
+                    <span class="text-green-500/50">~$</span>
+                    <input type="text" id="terminal-input" class="flex-1 bg-transparent text-green-500 outline-none font-mono text-sm" placeholder="Enter command..." autocomplete="off">
+                    <span class="text-green-500 animate-pulse">█</span>
+                </div>
+            </div>
+            
+            <!-- Quick Commands -->
+            <div class="mt-6 flex flex-wrap gap-2 justify-center">
+                <button onclick="executeCommand('status')" class="px-3 py-1 border border-green-500/30 text-green-500/70 text-xs hover:bg-green-500/10 transition-all">status</button>
+                <button onclick="executeCommand('pilots')" class="px-3 py-1 border border-green-500/30 text-green-500/70 text-xs hover:bg-green-500/10 transition-all">pilots</button>
+                <button onclick="executeCommand('eva')" class="px-3 py-1 border border-green-500/30 text-green-500/70 text-xs hover:bg-green-500/10 transition-all">eva</button>
+                <button onclick="executeCommand('angels')" class="px-3 py-1 border border-green-500/30 text-green-500/70 text-xs hover:bg-green-500/10 transition-all">angels</button>
+                <button onclick="executeCommand('magi')" class="px-3 py-1 border border-green-500/30 text-green-500/70 text-xs hover:bg-green-500/10 transition-all">magi</button>
+                <button onclick="executeCommand('lilith')" class="px-3 py-1 border border-red-500/30 text-red-500/70 text-xs hover:bg-red-500/10 transition-all">lilith</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Angels Database -->
+    <section class="py-24 px-4 relative overflow-hidden">
+        <div class="absolute top-0 right-0 text-[15rem] font-black text-red-500/5 jp-text pointer-events-none">使徒</div>
+        
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="text-center mb-16">
+                <p class="text-orange-500 text-xs tracking-[0.5em] mb-2">使徒データベース // ENEMY DATABASE</p>
+                <h2 class="section-header text-4xl font-bold" style="font-family: 'Orbitron';">ANGEL REGISTRY</h2>
+                <p class="text-gray-500 text-xs mt-6">CLASSIFIED INFORMATION - LEVEL 5 CLEARANCE REQUIRED</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
+                    <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">03</p>
+                    <p class="text-sm text-gray-400 mt-1 tracking-wider">SACHIEL</p>
+                    <p class="text-xs text-gray-600 jp-text">サキエル</p>
+                    <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
+                    <div class="absolute inset-0 bg-green-500/5 opacity-0 group-hover:opacity-100 transition-all"></div>
+                </div>
+                <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
+                    <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">04</p>
+                    <p class="text-sm text-gray-400 mt-1 tracking-wider">SHAMSHEL</p>
+                    <p class="text-xs text-gray-600 jp-text">シャムシェル</p>
+                    <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
+                    <div class="absolute inset-0 bg-green-500/5 opacity-0 group-hover:opacity-100 transition-all"></div>
+                </div>
+                <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
+                    <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">05</p>
+                    <p class="text-sm text-gray-400 mt-1 tracking-wider">RAMIEL</p>
+                    <p class="text-xs text-gray-600 jp-text">ラミエル</p>
+                    <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
+                    <div class="absolute inset-0 bg-green-500/5 opacity-0 group-hover:opacity-100 transition-all"></div>
+                </div>
+                <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
+                    <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">06</p>
+                    <p class="text-sm text-gray-400 mt-1 tracking-wider">GAGHIEL</p>
+                    <p class="text-xs text-gray-600 jp-text">ガギエル</p>
+                    <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
+                    <div class="absolute inset-0 bg-green-500/5 opacity-0 group-hover:opacity-100 transition-all"></div>
+                </div>
+                <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
+                    <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">07</p>
+                    <p class="text-sm text-gray-400 mt-1 tracking-wider">ISRAFEL</p>
+                    <p class="text-xs text-gray-600 jp-text">イスラフェル</p>
+                    <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
+                    <div class="absolute inset-0 bg-green-500/5 opacity-0 group-hover:opacity-100 transition-all"></div>
+                </div>
+                <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
+                    <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">08</p>
+                    <p class="text-sm text-gray-400 mt-1 tracking-wider">SANDALPHON</p>
+                    <p class="text-xs text-gray-600 jp-text">サンダルフォン</p>
+                    <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
+                    <div class="absolute inset-0 bg-green-500/5 opacity-0 group-hover:opacity-100 transition-all"></div>
+                </div>
+                <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
+                    <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">09</p>
+                    <p class="text-sm text-gray-400 mt-1 tracking-wider">MATARAEL</p>
+                    <p class="text-xs text-gray-600 jp-text">マトリエル</p>
+                    <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
+                    <div class="absolute inset-0 bg-green-500/5 opacity-0 group-hover:opacity-100 transition-all"></div>
+                </div>
+                <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
+                    <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">10</p>
+                    <p class="text-sm text-gray-400 mt-1 tracking-wider">SAHAQUIEL</p>
+                    <p class="text-xs text-gray-600 jp-text">サハクィエル</p>
+                    <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
+                    <div class="absolute inset-0 bg-green-500/5 opacity-0 group-hover:opacity-100 transition-all"></div>
+                </div>
+                <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
+                    <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">11</p>
+                    <p class="text-sm text-gray-400 mt-1 tracking-wider">IREUL</p>
+                    <p class="text-xs text-gray-600 jp-text">イロウル</p>
+                    <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
+                    <div class="absolute inset-0 bg-green-500/5 opacity-0 group-hover:opacity-100 transition-all"></div>
+                </div>
+                <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
+                    <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">12</p>
+                    <p class="text-sm text-gray-400 mt-1 tracking-wider">LELIEL</p>
+                    <p class="text-xs text-gray-600 jp-text">レリエル</p>
+                    <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
+                    <div class="absolute inset-0 bg-green-500/5 opacity-0 group-hover:opacity-100 transition-all"></div>
+                </div>
+                <div class="bg-black/80 border border-green-500/30 p-4 text-center hover:border-green-500 transition-all cursor-pointer group relative">
+                    <div class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></div>
+                    <p class="text-green-500 text-3xl font-bold" style="font-family: 'Orbitron';">13</p>
+                    <p class="text-sm text-gray-400 mt-1 tracking-wider">BARDIEL</p>
+                    <p class="text-xs text-gray-600 jp-text">バルディエル</p>
+                    <p class="text-xs text-green-500 mt-2 tracking-widest">DEFEATED</p>
+                    <div class="absolute inset-0 bg-green-500/5 opacity-0 group-hover:opacity-100 transition-all"></div>
+                </div>
+                <div class="bg-black/80 border border-yellow-500/30 p-4 text-center hover:border-yellow-500 transition-all cursor-pointer group relative">
+                    <div class="absolute top-1 right-1 w-2 h-2 bg-yellow-500 rounded-full warning-flash"></div>
+                    <p class="text-yellow-500 text-3xl font-bold warning-flash" style="font-family: 'Orbitron';">??</p>
+                    <p class="text-sm text-gray-400 mt-1 tracking-wider">UNKNOWN</p>
+                    <p class="text-xs text-gray-600 jp-text">不明</p>
+                    <p class="text-xs text-yellow-500 mt-2 tracking-widest">PENDING</p>
+                    <div class="absolute inset-0 bg-yellow-500/5 opacity-0 group-hover:opacity-100 transition-all"></div>
+                </div>
+            </div>
+            
+            <!-- Progenitor Angels -->
+            <div class="mt-12 grid md:grid-cols-2 gap-6">
+                <div class="border border-orange-500/50 bg-black/90 p-6 relative">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-transparent"></div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-orange-500 font-bold tracking-widest">ADAM // 第1使徒</h3>
+                        <span class="text-red-500 text-xs">CLASSIFIED</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">The First Angel. Progenitor of all Angels. Currently in embryonic state.</p>
+                    <p class="text-xs text-gray-600 mt-2 jp-text">全ての使徒の源。現在、胚状態で保管。</p>
+                    <div class="mt-4 flex gap-2">
+                        <span class="px-2 py-1 bg-orange-500/20 text-orange-500 text-xs">ORIGIN</span>
+                        <span class="px-2 py-1 bg-red-500/20 text-red-500 text-xs">SECOND IMPACT</span>
+                    </div>
+                </div>
+                <div class="border border-red-500/50 bg-black/90 p-6 relative">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-transparent"></div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-red-500 font-bold tracking-widest">LILITH // 第2使徒</h3>
+                        <span class="text-red-500 text-xs warning-flash">TOP SECRET</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">The Second Angel. Progenitor of humanity. Contained in Terminal Dogma.</p>
+                    <p class="text-xs text-gray-600 mt-2 jp-text">人類の源。ターミナルドグマに封印。</p>
+                    <div class="mt-4 flex gap-2">
+                        <span class="px-2 py-1 bg-red-500/20 text-red-500 text-xs">CRUCIFIED</span>
+                        <span class="px-2 py-1 bg-purple-500/20 text-purple-500 text-xs">INSTRUMENTALITY</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-orange-500/30 py-16 px-4 relative">
+        <div class="absolute inset-0 pointer-events-none overflow-hidden">
+            <div class="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-orange-500/5 to-transparent"></div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="grid md:grid-cols-4 gap-12 mb-16">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 border-2 border-orange-500 flex items-center justify-center">
+                            <div class="w-5 h-5 bg-orange-500"></div>
+                        </div>
+                        <h3 class="nerv-logo text-2xl">NERV</h3>
+                    </div>
+                    <p class="text-gray-500 text-sm">Special Agency NERV</p>
+                    <p class="text-gray-500 text-sm">Tokyo-3 Headquarters</p>
+                    <p class="text-gray-600 text-xs mt-2 jp-text">特務機関ネルフ本部</p>
+                    <p class="text-gray-600 text-xs jp-text">第三新東京市</p>
+                    <div class="mt-4 text-xs text-orange-500/50">
+                        <p>LAT: 35.2°N</p>
+                        <p>LONG: 139.0°E</p>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-orange-500 font-bold mb-4 text-sm tracking-widest">// QUICK LINKS</h4>
+                    <ul class="space-y-3 text-sm text-gray-500">
+                        <li><a href="#" class="hover:text-orange-500 transition-colors flex items-center gap-2"><span class="text-orange-500/50">►</span> Command Center</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition-colors flex items-center gap-2"><span class="text-orange-500/50">►</span> Eva Cages</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition-colors flex items-center gap-2"><span class="text-orange-500/50">►</span> Central Dogma</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition-colors flex items-center gap-2"><span class="text-orange-500/50">►</span> Terminal Dogma</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition-colors flex items-center gap-2"><span class="text-orange-500/50">►</span> GeoFront Access</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-orange-500 font-bold mb-4 text-sm tracking-widest">// DEPARTMENTS</h4>
+                    <ul class="space-y-3 text-sm text-gray-500">
+                        <li><a href="#" class="hover:text-orange-500 transition-colors flex items-center gap-2"><span class="text-orange-500/50">►</span> Operations Division</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition-colors flex items-center gap-2"><span class="text-orange-500/50">►</span> Technical Division</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition-colors flex items-center gap-2"><span class="text-orange-500/50">►</span> Intelligence Section</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition-colors flex items-center gap-2"><span class="text-orange-500/50">►</span> Medical Division</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition-colors flex items-center gap-2"><span class="text-orange-500/50">►</span> MAGI Maintenance</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-orange-500 font-bold mb-4 text-sm tracking-widest">// CLEARANCE</h4>
+                    <div class="bg-black/50 border border-orange-500/30 p-4">
+                        <p class="text-xs text-gray-500 mb-2">Current Access Level:</p>
+                        <p class="text-orange-500 font-bold text-lg" style="font-family: 'Orbitron';">LEVEL 5</p>
+                        <p class="text-xs text-gray-600">RESTRICTED ACCESS</p>
+                        <div class="mt-4 space-y-2 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">Central Dogma</span>
+                                <span class="text-green-500">✓</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">Terminal Dogma</span>
+                                <span class="text-red-500">✗</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">MAGI Core</span>
+                                <span class="text-green-500">✓</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="mt-4 w-full text-xs border border-orange-500 text-orange-500 px-4 py-2 hover:bg-orange-500 hover:text-black transition-all tracking-widest">
+                        REQUEST UPGRADE
+                    </button>
+                </div>
+            </div>
+
+            <div class="warning-stripes mb-8"></div>
+
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="text-center md:text-left">
+                    <p class="text-gray-500 text-sm">© 2015 NERV - 神は天にいまし 世は全て事もなし</p>
+                    <p class="text-orange-500/70 text-xs mt-1">God's in His Heaven. All's Right with the World.</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-gray-600 text-xs font-mono">DOCUMENT: NERV-HQ-2015-CLASSIFIED</p>
+                    <p class="text-gray-700 text-xs mt-1">SEELE//HUMAN INSTRUMENTALITY PROJECT</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right text-xs">
+                        <p class="text-gray-500">System Status</p>
+                        <p class="text-green-500">OPERATIONAL</p>
+                    </div>
+                    <div class="w-8 h-8 border border-green-500 flex items-center justify-center">
+                        <div class="w-3 h-3 bg-green-500 status-online"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Episode Preview Style -->
+            <div class="mt-16 text-center">
+                <p class="text-gray-600 text-xs tracking-widest mb-2">NEXT EPISODE</p>
+                <p class="text-3xl jp-text text-orange-500/30 font-black">人類補完計画</p>
+                <p class="text-gray-700 text-sm mt-2">THE HUMAN INSTRUMENTALITY PROJECT</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Clock and Date
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+            
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            document.getElementById('date').textContent = `${year}.${month}.${day}`;
+            
+            // Update alert time
+            const alertTime = document.getElementById('alert-time');
+            if (alertTime) {
+                alertTime.textContent = `${hours}:${minutes}:${seconds}`;
+            }
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Countdown Timer
+        let countdownSeconds = 5 * 60 * 60; // 5 hours
+        function updateCountdown() {
+            const hours = Math.floor(countdownSeconds / 3600);
+            const minutes = Math.floor((countdownSeconds % 3600) / 60);
+            const seconds = countdownSeconds % 60;
+            document.getElementById('countdown').textContent = 
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            if (countdownSeconds > 0) countdownSeconds--;
+        }
+        setInterval(updateCountdown, 1000);
+
+        // Random stat updates
+        function updateStats() {
+            const cpuLoad = Math.floor(Math.random() * 30) + 40;
+            const memoryUsage = Math.floor(Math.random() * 20) + 55;
+            document.getElementById('cpu-load').textContent = cpuLoad + '%';
+            document.getElementById('memory-usage').textContent = memoryUsage + '%';
+        }
+        setInterval(updateStats, 3000);
+
+        // Terminal functionality
+        const terminalInput = document.getElementById('terminal-input');
+        const terminalOutput = document.getElementById('terminal-output');
+
+        const commands = {
+            'help': `
+[COMMAND LIST]
+─────────────────────────────────────
+status   - Display system status
+pilots   - Show pilot information  
+eva      - Evangelion unit status
+angels   - Angel registry
+magi     - MAGI system status
+lilith   - [CLASSIFIED] Terminal Dogma
+adam     - [CLASSIFIED] Origin
+clear    - Clear terminal
+─────────────────────────────────────`,
+            'status': `
+[SYSTEM STATUS REPORT]
+─────────────────────────────────────
+MAGI CONSENSUS: 3/3 ACHIEVED
+AT FIELD: STABLE
+POWER GRID: 100%
+GEOFRONT: SECURE
+DEFCON: LEVEL 2
+─────────────────────────────────────
+全システム正常稼働中`,
+            'pilots': `
+[PILOT DATABASE]
+─────────────────────────────────────
+1ST CHILD: REI AYANAMI     // EVA-00
+           綾波レイ         // SYNC: 68.7%
+3RD CHILD: SHINJI IKARI    // EVA-01  
+           碇シンジ         // SYNC: 94.2%
+2ND CHILD: ASUKA LANGLEY   // EVA-02
+           惣流・アスカ     // SYNC: 78.9%
+─────────────────────────────────────`,
+            'angels': `
+[ANGEL REGISTRY]
+─────────────────────────────────────
+CATALOGUED: 17 | DEFEATED: 14
+CURRENT THREAT: ELEVATED
+LAST CONTACT: 72 HOURS AGO
+PATTERN BLUE: MONITORING
+─────────────────────────────────────
+使徒殲滅作戦継続中`,
+            'magi': `
+[MAGI SYSTEM STATUS]
+─────────────────────────────────────
+MELCHIOR-1: ONLINE  [SCIENTIST]
+BALTHASAR-2: ONLINE [MOTHER]
+CASPER-3: ONLINE    [WOMAN]
+─────────────────────────────────────
+CONSENSUS: ACHIEVED
+三賢者システム正常`,
+            'eva': `
+[EVANGELION STATUS]
+─────────────────────────────────────
+UNIT-00: STANDBY   | ARMOR: 94%
+UNIT-01: ACTIVE    | ARMOR: 87% | S²
+UNIT-02: STANDBY   | ARMOR: 91%
+─────────────────────────────────────
+エヴァンゲリオン発進準備完了`,
+            'lilith': `
+[ERROR] ACCESS DENIED
+─────────────────────────────────────
+CLEARANCE LEVEL 7 REQUIRED
+TERMINAL DOGMA ACCESS RESTRICTED
+THIS ATTEMPT HAS BEEN LOGGED
+─────────────────────────────────────
+[WARNING] セキュリティ違反検出`,
+            'adam': `
+[ERROR] ACCESS DENIED
+─────────────────────────────────────
+CLEARANCE LEVEL 7 REQUIRED
+INFORMATION CLASSIFIED BY SEELE
+THIS ATTEMPT HAS BEEN LOGGED
+─────────────────────────────────────
+[WARNING] 人類補完委員会機密情報`,
+            'clear': 'CLEAR'
+        };
+
+        function executeCommand(cmd) {
+            terminalInput.value = cmd;
+            processCommand(cmd);
+        }
+
+        function processCommand(command) {
+            const cmd = command.toLowerCase().trim();
+            
+            // Add command to output
+            const cmdLine = document.createElement('p');
+            cmdLine.className = 'text-green-500 mt-4';
+            cmdLine.textContent = 'NERV://~$ ' + command;
+            terminalOutput.appendChild(cmdLine);
+
+            // Process command
+            if (cmd === 'clear') {
+                terminalOutput.innerHTML = '<p class="text-green-500">> Terminal cleared // 端末クリア</p>';
+            } else if (commands[cmd]) {
+                const response = document.createElement('pre');
+                response.className = 'text-gray-400 text-xs whitespace-pre-wrap';
+                response.textContent = commands[cmd];
+                terminalOutput.appendChild(response);
+            } else if (cmd !== '') {
+                const error = document.createElement('p');
+                error.className = 'text-red-500';
+                error.textContent = '[ERROR] Unknown command: "' + cmd + '" // コマンド不明';
+                terminalOutput.appendChild(error);
+                const hint = document.createElement('p');
+                hint.className = 'text-gray-600 text-xs';
+                hint.textContent = 'Type "help" for available commands';
+                terminalOutput.appendChild(hint);
+            }
+
+            // Clear input and scroll
+            terminalInput.value = '';
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        }
+
+        terminalInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                processCommand(terminalInput.value);
+            }
+        });
+
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Console messages
+        console.log("%c ╔════════════════════════════════════════╗ ", "color: #ff6b00;");
+        console.log("%c ║     NERV_SYSTEM_INITIALIZED            ║ ", "background: #ff6b00; color: #000; font-weight: bold;");
+        console.log("%c ╚════════════════════════════════════════╝ ", "color: #ff6b00;");
+        console.log("%c God's in His Heaven. All's Right with the World. ", "color: #ff6b00;");
+        console.log("%c 神は天にいまし 世は全て事もなし ", "color: #666;");
+    </script>
+</body>
+</html>
